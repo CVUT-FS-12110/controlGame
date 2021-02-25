@@ -8,22 +8,18 @@ import {solve} from './modules/solver.js';
 // load canvas
 const canvas = document.getElementById("pidGame");
 const ctx = canvas.getContext("2d");
+
+// setting a period for simulation animation [s]
 const deltaT = 0.025;
 
-//Start updating canvas
+//Start updating canvas. Time in [ms]
 setInterval(updateGameArea, deltaT*1000);
 
 //image loading
-const cartImage = new Image();
-cartImage.src = 'img/cart.png';
-
-const pendulumImage = new Image();
-pendulumImage.src = 'img/pendulum.png';
-
 const segwayImage = new Image();
 segwayImage.src = 'img/segway.png';
 
-//date and force init
+//datetime and force init
 let d = new Date();
 let F = 0;
 
@@ -46,7 +42,6 @@ let canvasRect = canvas.getBoundingClientRect();
 let xCanvas =  canvasRect.left;
 let yCanvas = canvasRect.top;
 
-
 //get mouse position event
 window.onmousemove = function(e) {
     mouseCoords.x = e.clientX - xCanvas;
@@ -55,7 +50,6 @@ window.onmousemove = function(e) {
     document.getElementById("demo").innerHTML = "X coords: " + mouseCoords.x + ", Y coords: " + mouseCoords.y +
         ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logF = " + F;
 }
-
 
 // drawn component class
 class component{
@@ -109,27 +103,34 @@ class ImgComponent{
 
 }
 
-let segway = new ImgComponent(segwayImage, canvas.width/2 - segwayImage.width/(2*segwayScale),canvas.height/2 - segwayImage.height/(2*segwayScale));
+// segway object
+let segway = new ImgComponent(segwayImage, canvas.width/2 - segwayImage.width/(2*segwayScale),
+                           canvas.height/2 - segwayImage.height/(2*segwayScale));
 
-// cart = new ImgComponent(cartImage, 101.5,227);
-// pendulum = new ImgComponent(pendulumImage, cart.x - 1.5,cart.y - 127);
 
-
-// pendulum on a cart init
+// drawn pendulum on a cart init
 // cart = new component(cartWidth, cartHeight, "grey", canvas.width/2 - cartWidth/2, 120);
 // pendulum = new component(pendulumWidth, pendulumHeight, "black", cart.x + cart.width/2 - pendulumWidth/2,
-//                       cart.y + cart.height);
+//                          cart.y + cart.height);
 
-
+// function for calling simulation and animation update
 function updateGameArea(){
+    //clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //get time
     d = new Date();
+    //artificial force generation
     F = 50*Math.sin(d.getTime()/1000);
+
     // if (mouseCoords.b === 1) {
     //     segway.move(mouseCoords.x);
     // }
+
+    //call solver
     let result = solve(segway.x, segway.speedX, F, deltaT,1,1,0.9);
+    //update state variables
     segway.x += result.x1;
     segway.speedX = result.x2;
+    //draw new segway position
     segway.draw();
 }
