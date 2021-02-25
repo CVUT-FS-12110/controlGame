@@ -106,6 +106,8 @@ class ImgComponent{
 // segway object
 let segway = new ImgComponent(segwayImage, canvas.width/2 - segwayImage.width/(2*segwayScale),
                            canvas.height/2 - segwayImage.height/(2*segwayScale));
+//solver init
+let result = solve(segway.x, segway.speedX, F, deltaT,1,1,0.9);
 
 
 // drawn pendulum on a cart init
@@ -127,7 +129,7 @@ function updateGameArea(){
     // }
 
     //call solver
-    let result = solve(segway.x, segway.speedX, F, deltaT,1,1,0.9);
+    result = solve(segway.x, segway.speedX, F, deltaT,1,1,0.9);
     //update state variables
     segway.x += result.x1;
     segway.speedX = result.x2;
