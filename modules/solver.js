@@ -1,3 +1,4 @@
+//euler solver for (mC + mP).x" + b.x' = F
 export function solve(x1, x2, F, deltaT, mC, mP, b) {
     return {
         x1: deltaT * x2,
