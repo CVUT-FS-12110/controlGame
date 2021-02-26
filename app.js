@@ -9,12 +9,6 @@ import {solve} from './modules/solver.js';
 const canvas = document.getElementById("pidGame");
 const ctx = canvas.getContext("2d");
 
-// setting a period for simulation animation [s]
-const deltaT = 0.025;
-
-//Start updating canvas. Time in [ms]
-setInterval(updateGameArea, deltaT*1000);
-
 //image loading
 const segwayImage = new Image();
 segwayImage.src = 'img/segway.png';
@@ -22,6 +16,24 @@ segwayImage.src = 'img/segway.png';
 //datetime and force init
 let d = new Date();
 let F = 0;
+
+//model parameters
+let mC = 2;
+let mP = 1;
+let b = 0.6;
+let g = 9.81;
+let l = 1;
+let lt = l/2;
+let inertia = (4*mP*lt**2)/3;
+
+//model init conditions
+let x0 = 0;
+let xDot0 = 0;
+let fi0 = 0;
+let fiDot0 = 0;
+
+// setting a period for simulation animation [s]
+const deltaT = 0.025;
 
 //segway image parameters
 const segwayScale = 3;
@@ -48,8 +60,9 @@ window.onmousemove = function(e) {
     mouseCoords.y = e.clientY - yCanvas;
     mouseCoords.b = e.buttons;
     document.getElementById("demo").innerHTML = "X coords: " + mouseCoords.x + ", Y coords: " + mouseCoords.y +
-        ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logF = " + F;
+        ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logF = " + F + ", simulation = " + simulation;
 }
+
 
 // drawn component class
 class component{
@@ -97,17 +110,51 @@ class ImgComponent{
     draw(){
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
-    // transform(){
-    //     ctx.transform(0,0,0,0, 100,100);
-    // }
+    rotate(fi){
+       ctx.transform(Math.cos(fi), Math.sin(fi), -Math.sin(fi), Math.cos(fi), 0, 0);
+    }
 
 }
 
+//Start updating canvas. Time in [ms]
+// if(segwayImage.complete){
+//
+// }
+
+// Start and stop simulation by clicking
+let simulation = 0;
+let startButton = document.getElementById("start");
+let stopButton = document.getElementById("stop");
+
+startButton.onclick = function(){
+    if (simulation == 0) {
+        simulation = setInterval(updateGameArea, deltaT * 1000);
+    }
+}
+stopButton.onclick = function(){
+    clearInterval(simulation);
+    simulation = 0;
+}
+
+
+// image loading check
+let segway;
+let result;
+// TODO: probably needs more robust solution.
+window.onload = function (){
+    if (segwayImage.complete) {
+        segway = new ImgComponent(segwayImage, canvas.width / 2 - segwayImage.width / (2 * segwayScale),
+            canvas.height / 2 - segwayImage.height / (2 * segwayScale));
+        segway.draw();
+
+        //solver init
+        result = solve(segway.x, segway.speedX, F, deltaT, 1, 1, 0.9);
+    }
+    else {
+    document.getElementById("errors").innerHTML = "Error loading image, try to refresh"
+    }
+}
 // segway object
-let segway = new ImgComponent(segwayImage, canvas.width/2 - segwayImage.width/(2*segwayScale),
-                           canvas.height/2 - segwayImage.height/(2*segwayScale));
-//solver init
-let result = solve(segway.x, segway.speedX, F, deltaT,1,1,0.9);
 
 
 // drawn pendulum on a cart init
