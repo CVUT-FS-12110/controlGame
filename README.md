@@ -1,3 +1,3 @@
 # controlGame
 ## Automatic control web game
-Files needs to be served via http server.
+Files need to be served via http server due to CORS policy.
