@@ -38,10 +38,10 @@ let lt = l/2;
 let inertia = (4*mP*lt**2)/3;
 
 //model init conditions
-let x0 = (canvas.width / 2 - segwayImage.width / (2 * segwayScale))/m2px;
-let y0 = (canvas.height / 2 - segwayImage.height / (2 * segwayScale))/m2px;
+let x0 = (canvas.width / 2 - 30)/m2px;
+let y0 = (canvas.height / 2 - 100)/m2px;
 let xDot0 = 0.0;
-let fi0 = 3.14;
+let fi0 = 0.0;
 let fiDot0 = 0;
 
 // setting a period for simulation animation [s]
@@ -65,7 +65,7 @@ window.onmousemove = function(e) {
     mouseCoords.y = e.clientY - yCanvas;
     mouseCoords.b = e.buttons;
     document.getElementById("demo").innerHTML = "X coords: " + mouseCoords.x + ", Y coords: " + mouseCoords.y +
-        ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logF = " + F + ", fi = " + fi0;
+        ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logy = " + segway.y + " logF = " + F + ", fi = " + fi0;
 }
 
 
