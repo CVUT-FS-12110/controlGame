@@ -1,4 +1,4 @@
-import {solve} from './modules/solver.js';
+import {solvePendulum, solvePendulumNonLinear} from './modules/solver.js';
 
 // const cartWidth = 50
 // const cartHeight = 30
@@ -9,38 +9,43 @@ import {solve} from './modules/solver.js';
 const canvas = document.getElementById("pidGame");
 const ctx = canvas.getContext("2d");
 
+// const m2px = 3779.5;
+const m2px = 100;
+
+
 //image loading
 const segwayImage = new Image();
 segwayImage.src = 'img/segway.png';
+
+//segway image parameters
+const segwayScale = 3;
+const segwayAxis = {
+    y: 454/segwayScale,
+    x: 75/segwayScale
+}
 
 //datetime and force init
 let d = new Date();
 let F = 0;
 
 //model parameters
-let mC = 2;
-let mP = 1;
-let b = 0.6;
+let mC = 1.0;
+let mP = 0.5;
+let b =  0.9;
 let g = 9.81;
-let l = 1;
+let l = 1.0;
 let lt = l/2;
 let inertia = (4*mP*lt**2)/3;
 
 //model init conditions
-let x0 = 0;
-let xDot0 = 0;
-let fi0 = 0;
+let x0 = (canvas.width / 2 - segwayImage.width / (2 * segwayScale))/m2px;
+let y0 = (canvas.height / 2 - segwayImage.height / (2 * segwayScale))/m2px;
+let xDot0 = 0.0;
+let fi0 = 3.14;
 let fiDot0 = 0;
 
 // setting a period for simulation animation [s]
 const deltaT = 0.025;
-
-//segway image parameters
-const segwayScale = 3;
-const segwayAxis = {
-    x: 454/segwayScale,
-    y: 75/segwayScale
-}
 
 //mouse position init
 let mouseCoords = {
@@ -60,7 +65,7 @@ window.onmousemove = function(e) {
     mouseCoords.y = e.clientY - yCanvas;
     mouseCoords.b = e.buttons;
     document.getElementById("demo").innerHTML = "X coords: " + mouseCoords.x + ", Y coords: " + mouseCoords.y +
-        ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logF = " + F + ", simulation = " + simulation;
+        ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logF = " + F + ", fi = " + fi0;
 }
 
 
@@ -78,7 +83,7 @@ class component{
     }
     draw(){
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillRect(0, 0, this.width, this.height);
     }
     // rotate(){
     //
@@ -87,13 +92,15 @@ class component{
 
 // image component class
 class ImgComponent{
-    constructor(img, x, y) {
+    constructor(img, x, y, fi, speedX, speedFi) {
         this.width = img.width/segwayScale;
         this.height = img.height/segwayScale;
         this.img = img;
         this.x = x;
         this.y = y;
-        this.speedX = 0;
+        this.speedX = speedX;
+        this.fi = fi;
+        this.speedFi = speedFi;
     }
 
     move(xPos){
@@ -108,10 +115,13 @@ class ImgComponent{
         }
     }
     draw(){
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        ctx.drawImage(this.img, 0, 0, this.width, this.height);
     }
-    rotate(fi){
-       ctx.transform(Math.cos(fi), Math.sin(fi), -Math.sin(fi), Math.cos(fi), 0, 0);
+    transform(){
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.transform(1, 0, 0, 1, this.x*m2px + segwayAxis.x, this.y*m2px + segwayAxis.y);
+        ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);
+        ctx.transform(1, 0, 0, 1, -segwayAxis.x, -segwayAxis.y);
     }
 
 }
@@ -127,7 +137,7 @@ let startButton = document.getElementById("start");
 let stopButton = document.getElementById("stop");
 
 startButton.onclick = function(){
-    if (simulation == 0) {
+    if (simulation === 0) {
         simulation = setInterval(updateGameArea, deltaT * 1000);
     }
 }
@@ -143,12 +153,9 @@ let result;
 // TODO: probably needs more robust solution.
 window.onload = function (){
     if (segwayImage.complete) {
-        segway = new ImgComponent(segwayImage, canvas.width / 2 - segwayImage.width / (2 * segwayScale),
-            canvas.height / 2 - segwayImage.height / (2 * segwayScale));
+        segway = new ImgComponent(segwayImage, x0, y0, fi0, xDot0, fiDot0);
+        segway.transform();
         segway.draw();
-
-        //solver init
-        result = solve(segway.x, segway.speedX, F, deltaT, 1, 1, 0.9);
     }
     else {
     document.getElementById("errors").innerHTML = "Error loading image, try to refresh"
@@ -165,21 +172,27 @@ window.onload = function (){
 // function for calling simulation and animation update
 function updateGameArea(){
     //clear canvas
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
     //get time
     d = new Date();
     //artificial force generation
-    F = 50*Math.sin(d.getTime()/1000);
+    F = Math.sin(d.getTime()/500);
 
     // if (mouseCoords.b === 1) {
     //     segway.move(mouseCoords.x);
     // }
 
     //call solver
-    result = solve(segway.x, segway.speedX, F, deltaT,1,1,0.9);
+    result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,F,deltaT, mC, mP, inertia, b, lt, -g);
     //update state variables
-    segway.x += result.x1;
+    segway.x = result.x1;
     segway.speedX = result.x2;
+    segway.fi = result.x3;
+    segway.speedFi = result.x4;
+    segway.transform();
     //draw new segway position
     segway.draw();
 }
