@@ -1,5 +1,6 @@
 import {solvePendulum, solvePendulumNonLinear} from './modules/solver.js';
 
+//preparation for drawn pendulum
 // const cartWidth = 50
 // const cartHeight = 30
 // const pendulumWidth = 10
@@ -11,9 +12,8 @@ const canvasForce = document.getElementById("force");
 const ctx = canvas.getContext("2d");
 const ctxForce = canvasForce.getContext("2d");
 
-// const m2px = 3779.5;
+// const m2px = 3779.5 scaling px to meters
 const m2px = 100;
-
 
 //image loading
 const segwayImage = new Image();
@@ -22,22 +22,22 @@ segwayImage.src = 'img/segway.png';
 //segway image parameters
 const segwayScale = 3;
 const segwayAxis = {
-    y: 454/segwayScale,
-    x: 75/segwayScale
+    y: 454/segwayScale, //segway rotation axis
+    x: 75/segwayScale  //segway rotation axis
 }
 
 //datetime and force init
 let d = new Date();
-let F = 0;
+let f = 0;
 
 //model parameters
-let mC = 1.0;
-let mP = 0.5;
-let b =  0.9;
-let g = 9.81;
-let l = 1.0;
-let lt = l/2;
-let inertia = (4*mP*lt**2)/3;
+let mC = 1.0; //Cart mass
+let mP = 0.5; // Pendulum mass
+let b =  0.9; // Cart friction
+let g = 9.81; // gravity
+let l = 1.0; // pendulum length
+let lt = l/2; // pendulum center of mass
+let inertia = (4*mP*lt**2)/3; // pendulum inertia
 
 //model init conditions
 let x0 = (canvas.width / 2 - 30)/m2px;
@@ -61,21 +61,37 @@ let canvasRect = canvas.getBoundingClientRect();
 let xCanvas =  canvasRect.left;
 let yCanvas = canvasRect.top;
 
-//get mouse position event
+let canvasRectForce = canvasForce.getBoundingClientRect();
+let xCanvasForce =  canvasRectForce.left;
+let yCanvasForce = canvasRectForce.top;
+
+// force scale center
+let forceReference = {
+    x: canvasForce.width / 2,
+    y: canvasForce.height
+}
+
+// TODO: think about better mouse position and button reading
+//get mouse position when mouse is moving
 window.onmousemove = function(e) {
-    mouseCoords.x = e.clientX - xCanvas;
-    mouseCoords.y = e.clientY - yCanvas;
-    mouseCoords.b = e.buttons;
-    document.getElementById("demo").innerHTML = "X coords: " + mouseCoords.x + ", Y coords: " + mouseCoords.y +
-        ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logy = " + segway.y + " logF = " + F + ", fi = " + fi0;
-}
-//get mouse position event
-window.onmousedown= function(e) {
-    mouseCoords.b = e.buttons;
+    mouseCoords.x = e.clientX - xCanvas; // mouse position relative to canvas corner
+    mouseCoords.y = e.clientY - yCanvas; // mouse position relative to canvas corner
+    mouseCoords.b = e.buttons; // mouse button
+    }
+
+//get mouse position when mouse does not move and button is down
+window.onmousedown = function(e) {
+    mouseCoords.x = e.clientX - xCanvas; // mouse position relative to canvas corner
+    mouseCoords.y = e.clientY - yCanvas; // mouse position relative to canvas corner
+    mouseCoords.b = e.buttons; // mouse button
 }
 
+// must update mouse button information when not moving
+window.onmouseup = function(e) {
+    mouseCoords.b = e.buttons; // mouse button
+}
 
-// drawn component class
+// drawn rectangle component class
 class componentRect{
     constructor(width, height, color, x, y) {
         this.width = width;
@@ -96,7 +112,7 @@ class componentRect{
     }
 }
 
-// drawn component class
+// drawn arrow class
 class componentArrow{
     constructor(x, y, color) {
         this.x1 = x;
@@ -107,15 +123,6 @@ class componentArrow{
         this.y3 = this.y1 - 8;
         this.xRect = this.x2;
         this.color = color;
-    }
-
-     drawGame(){
-        ctx.beginPath();
-        ctx.moveTo(this.x1, this.y1);
-        ctx.lineTo(this.x2, this.y2);
-        ctx.lineTo(this.x3, this.y3);
-        ctx.fillStyle = this.color;
-        ctx.fill();
     }
 
     update(x){
@@ -145,20 +152,30 @@ class componentArrow{
         // draw arrow line
         ctxForce.fillStyle = this.color;
         ctxForce.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
+    }
 
+    drawGame(){
+        //draw arrow triangle
+        ctx.beginPath();
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
+        ctx.lineTo(this.x3, this.y3);
+        ctx.fillStyle = this.color;
+        ctx.fill();
 
+        // draw arrow line
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
     }
 }
 
-let forceReference = {
-    x: canvasForce.width / 2,
-    y: canvasForce.height
-}
-
+// draw force center
 let forceLine = new componentRect(3,30,"black", forceReference.x,5);
 forceLine.drawForce();
 
+// instance of force arrow
 let forceArrow = new componentArrow(20,20,"red");
+
 // image component class
 class ImgComponent{
     constructor(img, x, y, fi, speedX, speedFi) {
@@ -172,17 +189,6 @@ class ImgComponent{
         this.speedFi = speedFi;
     }
 
-    move(xPos){
-        if (xPos < 0) {
-            this.x = 0;
-        }
-        else if (xPos > canvas.width - 50){
-            this.x = canvas.width - 50;
-            }
-        else {
-            this.x = xPos;
-        }
-    }
     draw(){
         ctx.drawImage(this.img, 0, 0, this.width, this.height);
     }
@@ -249,7 +255,10 @@ function updateGameArea(){
         forceArrow.update(mouseCoords.x);
         forceArrow.drawForce();
         //user force generation
-        F = (mouseCoords.x - forceReference.x)/25;
+        f = (mouseCoords.x - forceReference.x)/20;
+    }
+    else {
+        f = 0.0;
     }
     forceLine.drawForce();
 
@@ -257,13 +266,21 @@ function updateGameArea(){
     d = new Date();
 
     //call solver
-    result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,F,deltaT, mC, mP, inertia, b, lt, -g);
+    result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,f,deltaT, mC, mP, inertia, b, lt, -g);
     //update state variables
     segway.x = result.x1;
     segway.speedX = result.x2;
     segway.fi = result.x3;
     segway.speedFi = result.x4;
+    if (segway.x <= 0) {
+        segway.x = 0;
+    }
+    if (segway.x*m2px >= canvas.width - 50){
+        segway.x = (canvas.width-50)/m2px;
+    }
     segway.transform();
     //draw new segway position
     segway.draw();
+    document.getElementById("demo").innerHTML = "mouse x: " + mouseCoords.x + ", mouse y: " + mouseCoords.y +
+        ", button = " + mouseCoords.b + ", x cart = " + segway.x + ", y cart = " + segway.y + " F = " + f + ", fi = " + segway.fi*180/Math.PI;
 }
