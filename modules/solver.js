@@ -18,6 +18,12 @@ export function solvePendulumNonLinear(x, xDot, fi, fiDot, u, deltaT, mC, mP, in
     }
 }
 
+// euler PID solver
+export function pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT) {
+    return uLast + r0*(e - eLast) + rI*e*deltaT + rD*(e - 2*eLast + eLast2)/deltaT
+}
+
+
 //euler solver for (mC + mP).x" + b.x' = F
 // export function solve(x1, x2, F, deltaT, mC, mP, b) {
 //     return {

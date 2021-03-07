@@ -1,4 +1,4 @@
-import {solvePendulumNonLinear} from './modules/solver.js';
+import {solvePendulumNonLinear, pid} from './modules/solver.js';
 
 //preparation for drawn pendulum
 // const cartWidth = 50
@@ -12,8 +12,8 @@ const canvasForce = document.getElementById("force");
 const ctx = canvas.getContext("2d");
 const ctxForce = canvasForce.getContext("2d");
 
-// const m2px = 3779.5 scaling px to meters
-const m2px = 100;
+//  1 m = 3779.5 px
+const m2px = 100; // scaling constant from px to something
 
 //image loading
 const segwayImage = new Image();
@@ -46,6 +46,16 @@ let y0 = (canvas.height / 2 - 100)/m2px;
 let xDot0 = 0.0;
 let fi0 = 0.0;
 let fiDot0 = 0;
+
+//pid parameters
+let r0 = -50;
+let rI = -20;
+let rD = -10;
+let e;
+let w = 0;
+let eLast = 0;
+let eLast2 = 0;
+let uLast = 0;
 
 // setting a period for simulation animation [s]
 const deltaT = 0.025;
@@ -238,6 +248,10 @@ resetButton.onclick = function(){
         simulation = 0;
     }
 
+    eLast = 0;
+    eLast2 = 0;
+    uLast = 0;
+
     segway.x = x0;
     segway.speedX = xDot0;
     segway.fi = fi0;
@@ -312,6 +326,13 @@ function updateGameArea(){
 
     //draw and calculate force
     mouseForce();
+
+    //pid
+    // e = w - segway.fi;
+    // f = pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT)*forceScale;
+    // eLast2 = eLast;
+    // eLast = e;
+    // uLast = f;
 
     //call solver
     result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,f,deltaT, mC, mP, inertia, b, lt, -g);
