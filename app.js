@@ -1,4 +1,4 @@
-import {solvePendulum, solvePendulumNonLinear} from './modules/solver.js';
+import {solvePendulumNonLinear} from './modules/solver.js';
 
 //preparation for drawn pendulum
 // const cartWidth = 50
@@ -29,6 +29,7 @@ const segwayAxis = {
 //datetime and force init
 // let d = new Date();
 let f = 0;
+let forceScale = 0.05;
 
 //model parameters
 let mC = 1.0; //Cart mass
@@ -268,14 +269,14 @@ function mouseForce(){
     if (mouseCoords.b === 1 && (yCanvasForce < mouseCoords.y) && ((yCanvasForce + canvasForce.height) > mouseCoords.y)) {
         //force saturation
         if (mouseCoords.x < 0) {
-            f = (-forceReference.x) / 20;
+            f = (-forceReference.x)*forceScale;
 
             //draw saturated arrow
             forceArrow.update(0);
             forceArrow.drawForce();
         }
         else if (mouseCoords.x > canvasForce.width) {
-            f = (canvasForce.width - forceReference.x) / 20;
+            f = (canvasForce.width - forceReference.x)*forceScale;
 
             //draw saturated arrow
             forceArrow.update(canvasForce.width);
@@ -283,7 +284,7 @@ function mouseForce(){
         }
         //when the mouse is in force canvas
         else {
-            f = (mouseCoords.x - forceReference.x) / 20;
+            f = (mouseCoords.x - forceReference.x)*forceScale;
 
             //draw arrow
             forceArrow.update(mouseCoords.x);
@@ -340,6 +341,6 @@ function updateGameArea(){
     // log line update
     document.getElementById("demo").innerHTML = "mouse x: " + mouseCoords.x + ", mouse y: " + mouseCoords.y
                                                         + ", button = " + mouseCoords.b + ", x cart = " + segway.x*m2px
-                                                        + ", y cart = " + segway.y*m2px + " F = " + f + ", fi = "
+                                                        + ", y cart = " + segway.y*m2px + " F = " + f*forceScale + ", fi = "
                                                         + segway.fi*180/Math.PI;
 }
