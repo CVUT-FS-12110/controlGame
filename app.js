@@ -49,6 +49,10 @@ let fiDot0 = 0;
 // setting a period for simulation animation [s]
 const deltaT = 0.025;
 
+// variable declaration of segway object and solver result
+let segway;
+let result;
+
 //mouse position init
 let mouseCoords = {
     x: innerWidth / 2,
@@ -63,7 +67,7 @@ let yCanvas = canvasRect.top;
 
 let canvasRectForce = canvasForce.getBoundingClientRect();
 let xCanvasForce =  canvasRectForce.left;
-let yCanvasForce = canvasRectForce.top;
+let yCanvasForce = canvasRectForce.top - yCanvas;
 
 // force scale center
 let forceReference = {
@@ -101,11 +105,13 @@ class componentRect{
         this.color = color;
     }
 
+    // draw in game canvas
     drawGame(){
         ctx.fillStyle = this.color;
         ctx.fillRect(0, 0, this.width, this.height);
     }
 
+    //draw in force canvas
     drawForce(){
         ctxForce.fillStyle = this.color;
         ctxForce.fillRect(this.x, this.y, this.width, this.height);
@@ -142,6 +148,7 @@ class componentArrow{
         }
     }
 
+    //draw in force canvas
     drawForce(){
         //draw arrow triangle
         ctxForce.beginPath();
@@ -156,6 +163,7 @@ class componentArrow{
         ctxForce.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
     }
 
+    //draw in game canvas
     drawGame(){
         //draw arrow triangle
         ctx.beginPath();
@@ -204,7 +212,7 @@ class ImgComponent{
 }
 
 
-// Start and stop simulation by clicking
+// Start stop and reset simulation by clicking on buttons
 let simulation = 0;
 let startButton = document.getElementById("start");
 let pauseButton = document.getElementById("pause");
@@ -240,10 +248,8 @@ resetButton.onclick = function(){
     segway.draw();
 }
 
-// image loading check
-let segway;
-let result;
-// TODO: probably needs more robust solution.
+// image loading check TODO: probably needs more robust solution.
+
 window.onload = function (){
     if (segwayImage.complete) {
         segway = new ImgComponent(segwayImage, x0, y0, fi0, xDot0, fiDot0);
@@ -254,13 +260,40 @@ window.onload = function (){
     document.getElementById("errors").innerHTML = "Error loading image, try to refresh"
     }
 }
-// segway object
 
 
-// drawn pendulum on a cart init
-// cart = new component(cartWidth, cartHeight, "grey", canvas.width/2 - cartWidth/2, 120);
-// pendulum = new component(pendulumWidth, pendulumHeight, "black", cart.x + cart.width/2 - pendulumWidth/2,
-//                          cart.y + cart.height);
+//function for force calculation and visualization according to mouse position in force canvas
+function mouseForce(){
+    //check if the mouse is in the force field and left button is down
+    if (mouseCoords.b === 1 && (yCanvasForce < mouseCoords.y) && ((yCanvasForce + canvasForce.height) > mouseCoords.y)) {
+        //force saturation
+        if (mouseCoords.x < 0) {
+            f = (-forceReference.x) / 20;
+
+            //draw saturated arrow
+            forceArrow.update(0);
+            forceArrow.drawForce();
+        }
+        else if (mouseCoords.x > canvasForce.width) {
+            f = (canvasForce.width - forceReference.x) / 20;
+
+            //draw saturated arrow
+            forceArrow.update(canvasForce.width);
+            forceArrow.drawForce();
+        }
+        //when the mouse is in force canvas
+        else {
+            f = (mouseCoords.x - forceReference.x) / 20;
+
+            //draw arrow
+            forceArrow.update(mouseCoords.x);
+            forceArrow.drawForce();
+        }
+    }
+    else {
+        f = 0.0;
+    }
+}
 
 // function for calling simulation and animation update
 function updateGameArea(){
@@ -272,28 +305,23 @@ function updateGameArea(){
 
     //clear force canvas
     ctxForce.clearRect(0, 0, canvasForce.width, canvasForce.height);
-    //update force canvas
-    if (mouseCoords.b === 1 && (450.0 < mouseCoords.y) && (550.0 > mouseCoords.y)  ) {
-        forceArrow.update(mouseCoords.x);
-        forceArrow.drawForce();
-        //user force generation
-        f = (mouseCoords.x - forceReference.x)/20;
-    }
-    else {
-        f = 0.0;
-    }
+
+    //draw force center line
     forceLine.drawForce();
 
-    //get time
-    d = new Date();
+    //draw and calculate force
+    mouseForce();
 
     //call solver
     result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,f,deltaT, mC, mP, inertia, b, lt, -g);
+
     //update state variables
     segway.x = result.x1;
     segway.speedX = result.x2;
     segway.fi = result.x3;
     segway.speedFi = result.x4;
+
+    // segway drawing saturation
     if (segway.x <= 0) {
         segway.x = 0;
         segway.speedX = 0;
@@ -302,9 +330,16 @@ function updateGameArea(){
         segway.x = (canvas.width-50)/m2px;
         segway.speedX = 0;
     }
+
+    // segway motion update
     segway.transform();
+
     //draw new segway position
     segway.draw();
-    document.getElementById("demo").innerHTML = "mouse x: " + mouseCoords.x + ", mouse y: " + mouseCoords.y +
-        ", button = " + mouseCoords.b + ", x cart = " + segway.x + ", y cart = " + segway.y + " F = " + f + ", fi = " + segway.fi*180/Math.PI;
+
+    // log line update
+    document.getElementById("demo").innerHTML = "mouse x: " + mouseCoords.x + ", mouse y: " + mouseCoords.y
+                                                        + ", button = " + mouseCoords.b + ", x cart = " + segway.x*m2px
+                                                        + ", y cart = " + segway.y*m2px + " F = " + f + ", fi = "
+                                                        + segway.fi*180/Math.PI;
 }
