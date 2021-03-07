@@ -7,7 +7,9 @@ import {solvePendulum, solvePendulumNonLinear} from './modules/solver.js';
 
 // load canvas
 const canvas = document.getElementById("pidGame");
+const canvasForce = document.getElementById("force");
 const ctx = canvas.getContext("2d");
+const ctxForce = canvasForce.getContext("2d");
 
 // const m2px = 3779.5;
 const m2px = 100;
@@ -67,10 +69,14 @@ window.onmousemove = function(e) {
     document.getElementById("demo").innerHTML = "X coords: " + mouseCoords.x + ", Y coords: " + mouseCoords.y +
         ", button = " + mouseCoords.b + ", logx = " + segway.x + ", logy = " + segway.y + " logF = " + F + ", fi = " + fi0;
 }
+//get mouse position event
+window.onmousedown= function(e) {
+    mouseCoords.b = e.buttons;
+}
 
 
 // drawn component class
-class component{
+class componentRect{
     constructor(width, height, color, x, y) {
         this.width = width;
         this.height = height;
@@ -78,18 +84,81 @@ class component{
         this.y = y;
         this.color = color;
     }
-    move(xPos){
-        this.x = xPos;
-    }
-    draw(){
+
+    drawGame(){
         ctx.fillStyle = this.color;
         ctx.fillRect(0, 0, this.width, this.height);
     }
-    // rotate(){
-    //
-    // }
+
+    drawForce(){
+        ctxForce.fillStyle = this.color;
+        ctxForce.fillRect(this.x, this.y, this.width, this.height);
+    }
 }
 
+// drawn component class
+class componentArrow{
+    constructor(x, y, color) {
+        this.x1 = x;
+        this.y1 = y;
+        this.x2 = this.x1 + 8;
+        this.y2 = this.y1 + 8;
+        this.x3 = this.x2;
+        this.y3 = this.y1 - 8;
+        this.xRect = this.x2;
+        this.color = color;
+    }
+
+     drawGame(){
+        ctx.beginPath();
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
+        ctx.lineTo(this.x3, this.y3);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    }
+
+    update(x){
+        this.x1 = x;
+        if (this.x1 < forceReference.x) {
+            this.x2 = this.x1 + 8;
+            this.x3 = this.x2;
+            this.xRect = this.x2;
+
+        }
+        else {
+            this.x2 = this.x1 - 8;
+            this.x3 = this.x2;
+            this.xRect = forceReference.x;
+        }
+    }
+
+    drawForce(){
+        //draw arrow triangle
+        ctxForce.beginPath();
+        ctxForce.moveTo(this.x1, this.y1);
+        ctxForce.lineTo(this.x2, this.y2);
+        ctxForce.lineTo(this.x3, this.y3);
+        ctxForce.fillStyle = this.color;
+        ctxForce.fill();
+
+        // draw arrow line
+        ctxForce.fillStyle = this.color;
+        ctxForce.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
+
+
+    }
+}
+
+let forceReference = {
+    x: canvasForce.width / 2,
+    y: canvasForce.height
+}
+
+let forceLine = new componentRect(3,30,"black", forceReference.x,5);
+forceLine.drawForce();
+
+let forceArrow = new componentArrow(20,20,"red");
 // image component class
 class ImgComponent{
     constructor(img, x, y, fi, speedX, speedFi) {
@@ -126,10 +195,6 @@ class ImgComponent{
 
 }
 
-//Start updating canvas. Time in [ms]
-// if(segwayImage.complete){
-//
-// }
 
 // Start and stop simulation by clicking
 let simulation = 0;
@@ -171,19 +236,25 @@ window.onload = function (){
 
 // function for calling simulation and animation update
 function updateGameArea(){
-    //clear canvas
+    //clear game canvas
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
+
+    //clear force canvas
+    ctxForce.clearRect(0, 0, canvasForce.width, canvasForce.height);
+    //update force canvas
+    if (mouseCoords.b === 1 && (450.0 < mouseCoords.y) && (550.0 > mouseCoords.y)  ) {
+        forceArrow.update(mouseCoords.x);
+        forceArrow.drawForce();
+        //user force generation
+        F = (mouseCoords.x - forceReference.x)/25;
+    }
+    forceLine.drawForce();
+
     //get time
     d = new Date();
-    //artificial force generation
-    F = Math.sin(d.getTime()/500);
-
-    // if (mouseCoords.b === 1) {
-    //     segway.move(mouseCoords.x);
-    // }
 
     //call solver
     result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,F,deltaT, mC, mP, inertia, b, lt, -g);
