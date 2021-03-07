@@ -27,7 +27,7 @@ const segwayAxis = {
 }
 
 //datetime and force init
-let d = new Date();
+// let d = new Date();
 let f = 0;
 
 //model parameters
