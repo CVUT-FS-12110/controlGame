@@ -127,12 +127,14 @@ class componentArrow{
 
     update(x){
         this.x1 = x;
+        // arrow to the left from center
         if (this.x1 < forceReference.x) {
             this.x2 = this.x1 + 8;
             this.x3 = this.x2;
             this.xRect = this.x2;
 
         }
+        // arrow to the right from the center
         else {
             this.x2 = this.x1 - 8;
             this.x3 = this.x2;
@@ -193,10 +195,10 @@ class ImgComponent{
         ctx.drawImage(this.img, 0, 0, this.width, this.height);
     }
     transform(){
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.transform(1, 0, 0, 1, this.x*m2px + segwayAxis.x, this.y*m2px + segwayAxis.y);
-        ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);
-        ctx.transform(1, 0, 0, 1, -segwayAxis.x, -segwayAxis.y);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);// reset coordinates system
+        ctx.transform(1, 0, 0, 1, this.x*m2px + segwayAxis.x, this.y*m2px + segwayAxis.y);// shift to the axis
+        ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);// rotate
+        ctx.transform(1, 0, 0, 1, -segwayAxis.x, -segwayAxis.y); // shift to the img corner
     }
 
 }
@@ -205,18 +207,38 @@ class ImgComponent{
 // Start and stop simulation by clicking
 let simulation = 0;
 let startButton = document.getElementById("start");
-let stopButton = document.getElementById("stop");
+let pauseButton = document.getElementById("pause");
+let resetButton = document.getElementById("reset");
 
 startButton.onclick = function(){
     if (simulation === 0) {
         simulation = setInterval(updateGameArea, deltaT * 1000);
     }
 }
-stopButton.onclick = function(){
-    clearInterval(simulation);
-    simulation = 0;
+
+pauseButton.onclick = function(){
+    if (simulation !== 0) {
+        clearInterval(simulation);
+        simulation = 0;
+    }
 }
 
+resetButton.onclick = function(){
+    if (simulation !== 0) {
+        clearInterval(simulation);
+        simulation = 0;
+    }
+
+    segway.x = x0;
+    segway.speedX = xDot0;
+    segway.fi = fi0;
+    segway.speedFi = fiDot0;
+    f = 0;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    segway.transform();
+    segway.draw();
+}
 
 // image loading check
 let segway;
@@ -274,9 +296,11 @@ function updateGameArea(){
     segway.speedFi = result.x4;
     if (segway.x <= 0) {
         segway.x = 0;
+        segway.speedX = 0;
     }
     if (segway.x*m2px >= canvas.width - 50){
         segway.x = (canvas.width-50)/m2px;
+        segway.speedX = 0;
     }
     segway.transform();
     //draw new segway position
