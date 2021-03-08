@@ -1,8 +1,5 @@
 import {solvePendulumNonLinear, pid} from '/static/js/solver.js';
 
-const segwayImage = new Image();
-segwayImage.src = '/static/games/segway/segway.png';
-
 function create_html() {
     let wid = $("#game_screen").width();
     let hei = Math.round(wid / 5 * 4)
@@ -27,6 +24,8 @@ function game_init() {
     };
     window.game_params.inertia = (4 * window.game_params.mP * window.game_params.lt**2) / 3;
     window.game_params.lt = window.game_params.l / 2; // pendulum center of mass
+
+
 }
 
 
@@ -39,17 +38,17 @@ window.canvas_params.canvasForce = document.getElementById("force");
 window.canvas_params.ctx = window.canvas_params.canvas.getContext("2d");
 window.canvas_params.ctxForce = window.canvas_params.canvasForce.getContext("2d");
 
-
-
 // 100 px for every 500px of canvas width
-const m2px = 500 / window.canvas_params.canvas.width * 100; // ?
-
+window.canvas_params.m2px = 500 / window.canvas_params.canvas.width * 100; // ?
 
 //segway image parameters
-const segwayScale = 500 / window.canvas_params.canvas.width * 3;
-const segwayAxis = {
-    y: 454/segwayScale, //segway rotation axis
-    x: 75/segwayScale  //segway rotation axis
+window.segway_params = {};
+window.segway_params.segwayImage = new Image();
+window.segway_params.segwayImage.src = '/static/games/segway/segway.png';
+window.segway_params.segwayScale = 500 / window.canvas_params.canvas.width * 3;
+window.segway_params.segwayAxis = {
+    y: 454 / window.segway_params.segwayScale, //segway rotation axis
+    x: 75 / window.segway_params.segwayScale  //segway rotation axis
 }
 
 //datetime and force init
@@ -59,8 +58,8 @@ let forceScale = 500 / window.canvas_params.canvas.width * 0.05; // TODO: What i
 
 
 //model init conditions
-let x0 = (window.canvas_params.canvas.width / 2 - (segwayImage.width / 2 / segwayScale)) / m2px;
-let y0 = (window.canvas_params.canvas.height / 3) / m2px;
+let x0 = (window.canvas_params.canvas.width / 2 - (window.segway_params.segwayImage.width / 2 / window.segway_params.segwayScale)) / window.canvas_params.m2px;
+let y0 = (window.canvas_params.canvas.height / 3) / window.canvas_params.m2px;
 let xDot0 = 0.0;
 let fi0 = 0.5;
 let fiDot0 = 0;
@@ -69,7 +68,7 @@ let fiDot0 = 0;
 let deltaT = 0.025;
 
 // variable declaration of segway object and solver result
-let segway;
+window.segway_params.segway;
 let result;
 
 //mouse position init
@@ -208,8 +207,8 @@ let forceArrow = new componentArrow(20,20,"red");
 // image component class
 class ImgComponent{
     constructor(img, x, y, fi, speedX, speedFi) {
-        this.width = img.width/segwayScale;
-        this.height = img.height/segwayScale;
+        this.width = img.width / window.segway_params.segwayScale;
+        this.height = img.height / window.segway_params.segwayScale;
         this.img = img;
         this.x = x;
         this.y = y;
@@ -223,9 +222,9 @@ class ImgComponent{
     }
     transform(){
         window.canvas_params.ctx.setTransform(1, 0, 0, 1, 0, 0);// reset coordinates system
-        window.canvas_params.ctx.transform(1, 0, 0, 1, this.x*m2px + segwayAxis.x, this.y*m2px + segwayAxis.y);// shift to the axis
+        window.canvas_params.ctx.transform(1, 0, 0, 1, this.x * window.canvas_params.m2px + window.segway_params.segwayAxis.x, this.y * window.canvas_params.m2px + window.segway_params.segwayAxis.y);// shift to the axis
         window.canvas_params.ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);// rotate
-        window.canvas_params.ctx.transform(1, 0, 0, 1, -segwayAxis.x, -segwayAxis.y); // shift to the img corner
+        window.canvas_params.ctx.transform(1, 0, 0, 1, -window.segway_params.segwayAxis.x, -window.segway_params.segwayAxis.y); // shift to the img corner
     }
 
 }
@@ -248,16 +247,16 @@ window.reset_game = function()  {
 //    uLast = 0;
 
     //simulation reset
-    segway.x = x0;
-    segway.speedX = xDot0;
-    segway.fi = fi0;
-    segway.speedFi = fiDot0;
+    window.segway_params.segway.x = x0;
+    window.segway_params.segway.speedX = xDot0;
+    window.segway_params.segway.fi = fi0;
+    window.segway_params.segway.speedFi = fiDot0;
     f = 0;
 
     //clear canvas
     window.canvas_params.ctx.clearRect(0, 0, window.canvas_params.canvas.width, window.canvas_params.canvas.height);
-    segway.transform();
-    segway.draw();
+    window.segway_params.segway.transform();
+    window.segway_params.segway.draw();
 }
 
 window.pause_game = function()  {
@@ -285,10 +284,10 @@ let simulation = 0;
 
 // image loading check TODO: probably needs more robust solution.
 window.onload = function (){
-    if (segwayImage.complete) {
-        segway = new ImgComponent(segwayImage, x0, y0, fi0, xDot0, fiDot0);
-        segway.transform();
-        segway.draw();
+    if (window.segway_params.segwayImage.complete) {
+        window.segway_params.segway = new ImgComponent(window.segway_params.segwayImage, x0, y0, fi0, xDot0, fiDot0);
+        window.segway_params.segway.transform();
+        window.segway_params.segway.draw();
     }
     else {
     document.getElementById("errors").innerHTML = "Error loading image, try to refresh"
@@ -345,7 +344,7 @@ function updateGameArea(){
 
     // control
      if (window.regulator === "pid") {
-        window.params_pid.e = window.params_pid.w - segway.fi;
+        window.params_pid.e = window.params_pid.w - window.segway_params.segway.fi;
         f = pid(
             window.params_pid.e,
             window.params_pid.eLast,
@@ -363,10 +362,10 @@ function updateGameArea(){
 
     //call solver
     result = solvePendulumNonLinear(
-        segway.x,
-        segway.speedX,
-        segway.fi,
-        segway.speedFi,
+        window.segway_params.segway.x,
+        window.segway_params.segway.speedX,
+        window.segway_params.segway.fi,
+        window.segway_params.segway.speedFi,
         f,
         deltaT,
         window.game_params.mC,
@@ -377,30 +376,30 @@ function updateGameArea(){
         -window.game_params.g);
 
     //update state variables
-    segway.x = result.x1;
-    segway.speedX = result.x2;
-    segway.fi = result.x3;
-    segway.speedFi = result.x4;
+    window.segway_params.segway.x = result.x1;
+    window.segway_params.segway.speedX = result.x2;
+    window.segway_params.segway.fi = result.x3;
+    window.segway_params.segway.speedFi = result.x4;
 
     // segway drawing saturation
-    if (segway.x <= 0) {
-        segway.x = 0;
-        segway.speedX = 0;
+    if (window.segway_params.segway.x <= 0) {
+        window.segway_params.segway.x = 0;
+        window.segway_params.segway.speedX = 0;
     }
-    if (segway.x*m2px >= window.canvas_params.width - 50){
-        segway.x = (window.canvas_params.canvas.width-50)/m2px;
-        segway.speedX = 0;
+    if (window.segway_params.segway.x * window.canvas_params.m2px >= window.canvas_params.canvas.width - 50){
+        window.segway_params.segway.x = (window.canvas_params.canvas.width - 50) / window.canvas_params.m2px;
+        window.segway_params.segway.speedX = 0;
     }
 
     // segway motion update
-    segway.transform();
+    window.segway_params.segway.transform();
 
     //draw new segway position
-    segway.draw();
+    window.segway_params.segway.draw();
 
     // log line update
     document.getElementById("demo").innerHTML = "mouse x: " + mouseCoords.x + ", mouse y: " + mouseCoords.y
-                                                        + ", button = " + mouseCoords.b + ", x cart = " + segway.x*m2px
-                                                        + ", y cart = " + segway.y*m2px + " F = " + f*forceScale + ", fi = "
-                                                        + segway.fi*180/Math.PI;
+                                                        + ", button = " + mouseCoords.b + ", x cart = " + window.segway_params.segway.x * window.canvas_params.m2px
+                                                        + ", y cart = " + window.segway_params.segway.y * window.canvas_params.m2px + " F = " + f*forceScale + ", fi = "
+                                                        + window.segway_params.segway.fi*180/Math.PI;
 }
