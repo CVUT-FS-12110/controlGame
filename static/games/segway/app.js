@@ -1,39 +1,22 @@
 import {solvePendulumNonLinear, pid} from '/modules/solver.js';
 
+const segwayImage = new Image();
+segwayImage.src = '/static/games/segway/segway.png';
+
+
+
 function create_html() {
     let w = $("#game_screen").width();
     let h = Math.round(w / 5 * 4)
+
     let game_screen_html = '<canvas id="pidGame" width="' + w + '" height="' + h + '" ></canvas>';
     $("#game_screen").append(game_screen_html);
-}
 
+    let game_controls_html = '<canvas id="force" width="' + w + '" height="40" ></canvas>'
+    $("#game_controls").append(game_controls_html);
+}
 
 create_html()
-
-// load canvas
-const canvas = document.getElementById("pidGame");
-const canvasForce = document.getElementById("force");
-const ctx = canvas.getContext("2d");
-const ctxForce = canvasForce.getContext("2d");
-
-//  1 m = 3779.5 px
-const m2px = 100; // scaling constant from px to something
-
-//image loading
-const segwayImage = new Image();
-segwayImage.src = 'img/segway.png';
-
-//segway image parameters
-const segwayScale = 3;
-const segwayAxis = {
-    y: 454/segwayScale, //segway rotation axis
-    x: 75/segwayScale  //segway rotation axis
-}
-
-//datetime and force init
-// let d = new Date();
-let f = 0;
-let forceScale = 0.05;
 
 //model parameters
 let mC = 1.0; //Cart mass
@@ -44,13 +27,6 @@ let l = 1.0; // pendulum length
 let lt = l/2; // pendulum center of mass
 let inertia = (4*mP*lt**2)/3; // pendulum inertia
 
-//model init conditions
-let x0 = (canvas.width / 2 - 30)/m2px;
-let y0 = (canvas.height / 2 - 100)/m2px;
-let xDot0 = 0.0;
-let fi0 = 0.0;
-let fiDot0 = 0;
-
 //pid parameters
 let r0 = -50;
 let rI = -20;
@@ -60,6 +36,39 @@ let w = 0;
 let eLast = 0;
 let eLast2 = 0;
 let uLast = 0;
+
+
+// load canvas
+const canvas = document.getElementById("pidGame");
+const canvasForce = document.getElementById("force");
+const ctx = canvas.getContext("2d");
+const ctxForce = canvasForce.getContext("2d");
+
+// 100 px for every 500px of canvas width
+const m2px = 500 / canvas.width * 100; // ?
+
+
+//segway image parameters
+const segwayScale = 500 / canvas.width * 3;
+const segwayAxis = {
+    y: 454/segwayScale, //segway rotation axis
+    x: 75/segwayScale  //segway rotation axis
+}
+
+//datetime and force init
+// let d = new Date();
+let f = 0;
+let forceScale = 500 / canvas.width * 0.05;
+
+
+//model init conditions
+let x0 = (canvas.width / 2 - (segwayImage.width / 2 / segwayScale)) / m2px;
+let y0 = (canvas.height / 3) / m2px;
+let xDot0 = 0.0;
+let fi0 = 0.0;
+let fiDot0 = 0;
+
+
 
 // setting a period for simulation animation [s]
 let deltaT = 0.025;
