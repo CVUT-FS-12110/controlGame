@@ -58,7 +58,7 @@ let eLast2 = 0;
 let uLast = 0;
 
 // setting a period for simulation animation [s]
-const deltaT = 0.025;
+let deltaT = 0.025;
 
 // variable declaration of segway object and solver result
 let segway;
@@ -134,10 +134,10 @@ class componentArrow{
     constructor(x, y, color) {
         this.x1 = x;
         this.y1 = y;
-        this.x2 = this.x1 + 8;
-        this.y2 = this.y1 + 8;
+        this.x2 = this.x1 + 8; //size of an arrow
+        this.y2 = this.y1 + 8; // size of an arrow
         this.x3 = this.x2;
-        this.y3 = this.y1 - 8;
+        this.y3 = this.y1 - 8;// size of an arrow
         this.xRect = this.x2;
         this.color = color;
     }
@@ -247,24 +247,25 @@ resetButton.onclick = function(){
         clearInterval(simulation);
         simulation = 0;
     }
-
+    // pid reset
     eLast = 0;
     eLast2 = 0;
     uLast = 0;
 
+    //simulation reset
     segway.x = x0;
     segway.speedX = xDot0;
     segway.fi = fi0;
     segway.speedFi = fiDot0;
     f = 0;
 
+    //clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     segway.transform();
     segway.draw();
 }
 
 // image loading check TODO: probably needs more robust solution.
-
 window.onload = function (){
     if (segwayImage.complete) {
         segway = new ImgComponent(segwayImage, x0, y0, fi0, xDot0, fiDot0);
@@ -328,11 +329,11 @@ function updateGameArea(){
     mouseForce();
 
     //pid
-    // e = w - segway.fi;
-    // f = pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT)*forceScale;
-    // eLast2 = eLast;
-    // eLast = e;
-    // uLast = f;
+    e = w - segway.fi;
+    f = pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT)*forceScale;
+    eLast2 = eLast;
+    eLast = e;
+    uLast = f;
 
     //call solver
     result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,f,deltaT, mC, mP, inertia, b, lt, -g);
