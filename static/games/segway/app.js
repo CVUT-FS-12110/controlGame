@@ -3,18 +3,17 @@ import {solvePendulumNonLinear, pid} from '/modules/solver.js';
 const segwayImage = new Image();
 segwayImage.src = '/static/games/segway/segway.png';
 
-
-
 function create_html() {
-    let w = $("#game_screen").width();
-    let h = Math.round(w / 5 * 4)
+    let wid = $("#game_screen").width();
+    let hei = Math.round(wid / 5 * 4)
 
-    let game_screen_html = '<canvas id="pidGame" width="' + w + '" height="' + h + '" ></canvas>';
+    let game_screen_html = '<canvas id="pidGame" width="' + wid + '" height="' + hei + '" ></canvas>';
     $("#game_screen").append(game_screen_html);
 
-    let game_controls_html = '<canvas id="force" width="' + w + '" height="40" ></canvas>'
+    let game_controls_html = '<canvas class="pointer" id="force" width="' + wid + '" height="40" ></canvas>'
     $("#game_controls").append(game_controls_html);
 }
+
 
 create_html()
 
@@ -58,17 +57,15 @@ const segwayAxis = {
 //datetime and force init
 // let d = new Date();
 let f = 0;
-let forceScale = 500 / canvas.width * 0.05;
+let forceScale = 500 / canvas.width * 0.05; // TODO: What is that?
 
 
 //model init conditions
 let x0 = (canvas.width / 2 - (segwayImage.width / 2 / segwayScale)) / m2px;
 let y0 = (canvas.height / 3) / m2px;
 let xDot0 = 0.0;
-let fi0 = 0.0;
+let fi0 = 0.5;
 let fiDot0 = 0;
-
-
 
 // setting a period for simulation animation [s]
 let deltaT = 0.025;
@@ -339,14 +336,14 @@ function updateGameArea(){
     forceLine.drawForce();
 
     //draw and calculate force
-    mouseForce();
+//    mouseForce();
 
     //pid
-//    e = w - segway.fi;
-//    f = pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT)*forceScale;
-//    eLast2 = eLast;
-//    eLast = e;
-//    uLast = f;
+    e = w - segway.fi;
+    f = pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT);
+    eLast2 = eLast;
+    eLast = e;
+    uLast = f;
 
     //call solver
     result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,f,deltaT, mC, mP, inertia, b, lt, -g);

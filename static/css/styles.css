@@ -1,7 +1,3 @@
-body {
-    width: 100%;
-}
-
 canvas {
     border:1px solid #d3d3d3;
     background-color: #f1f1f1;
@@ -9,4 +5,12 @@ canvas {
 
 #game_screen, #game_controls {
     width: 40%;
+}
+
+#game_controls {
+    display: none;
+}
+
+.pointer {
+    cursor: pointer;
 }
