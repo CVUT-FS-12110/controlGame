@@ -1,4 +1,4 @@
-import {solvePendulumNonLinear, pid} from '/modules/solver.js';
+import {solvePendulumNonLinear, pid} from '/static/js/solver.js';
 
 const segwayImage = new Image();
 segwayImage.src = '/static/games/segway/segway.png';
@@ -14,18 +14,18 @@ function create_html() {
     $("#game_controls").append(game_controls_html);
 }
 
-
 create_html()
 
 //model parameters
-let mC = 1.0; //Cart mass
-let mP = 0.5; // Pendulum mass
-let b =  0.9; // Cart friction
-let g = 9.81; // gravity
-let l = 1.0; // pendulum length
-let lt = l/2; // pendulum center of mass
-let inertia = (4*mP*lt**2)/3; // pendulum inertia
-
+window.game_params = {
+    mC: 1.0, //Cart mass
+    mP: 0.5, // Pendulum mass
+    b:  0.9, // Cart friction
+    g: 9.81, // gravity
+    l: 1.0, // pendulum length
+}
+window.game_params.inertia = (4 * window.game_params.mP * window.game_params.lt**2) / 3;
+window.game_params.lt = window.game_params.l / 2 // pendulum center of mass
 
 
 // load canvas
@@ -224,13 +224,13 @@ class ImgComponent{
 }
 
 
-function start_game() {
+window.start_game = function() {
     if (simulation === 0) {
         simulation = setInterval(updateGameArea, deltaT * 1000);
     }
 }
 
-function reset_game() {
+window.reset_game = function()  {
     if (simulation !== 0) {
         clearInterval(simulation);
         simulation = 0;
@@ -253,7 +253,7 @@ function reset_game() {
     segway.draw();
 }
 
-function pause_game() {
+window.pause_game = function()  {
     if (simulation !== 0) {
         clearInterval(simulation);
         simulation = 0;
@@ -261,15 +261,15 @@ function pause_game() {
 }
 
 $("#start").click(function() {
-    start_game()
+    window.start_game();
 });
 
 $("#reset").click(function() {
-    reset_game()
+    window.reset_game();
 });
 
 $("#pause").click(function() {
-    pause_game()
+    window.pause_game();
 });
 
 
@@ -355,7 +355,19 @@ function updateGameArea(){
     }
 
     //call solver
-    result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,f,deltaT, mC, mP, inertia, b, lt, -g);
+    result = solvePendulumNonLinear(
+        segway.x,
+        segway.speedX,
+        segway.fi,
+        segway.speedFi,
+        f,
+        deltaT,
+        window.game_params.mC,
+        window.game_params.mP,
+        window.game_params.inertia,
+        window.game_params.b,
+        window.game_params.lt,
+        -window.game_params.g);
 
     //update state variables
     segway.x = result.x1;
