@@ -1,26 +1,39 @@
+let regulators = ["manual", "pid"];
+
 
 function init_regulator_pid() {
 
 }
 
 function init_regulator_manual() {
-
     $("#game_controls").show()
 }
 
+function switch_regulator(name) {
+    window.regulator = name;
+    $("#game_controls").hide()
+    REGULATORS[name]();
+}
 
 
 function show_regulator_menu(regulators) {
-    html_src = "";
+    $("#regulator_menu").html("")
 
     var i;
-    for (i = 0; i < cars.regulators; i++) {
-        name += regulators[i];
-        html_src += '<input type="radio" name="regulator" value="' + name + '">';
-        html_src += '<label for="' + + '">' + + '</label><br>';
-    };
-}
+    let html_src, name;
+    for (i = 0; i < regulators.length; i++) {
+        name = regulators[i];
+        html_src = '<button name="' + name + '">' + name + '</button>';
+        $("#regulator_menu").append(html_src)
 
+    };
+
+    $("#regulator_menu button").click(function() {
+        switch_regulator($( this ).attr('name'))
+    });
+    $("#regulator_menu").show()
+
+}
 
 let REGULATORS = {
     "manual": init_regulator_manual,
@@ -28,14 +41,8 @@ let REGULATORS = {
 }
 
 
-
-
-
-let regulators = ["manual", "pid"];
-
-let regulator = "pid";
-
-
-REGULATORS[regulator]();
+show_regulator_menu(regulators)
+window.regulator;
+switch_regulator("manual");
 
 

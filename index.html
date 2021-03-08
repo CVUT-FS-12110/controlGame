@@ -11,18 +11,27 @@
 
 <h1>The Game</h1>
 
-<div id="game_screen"></div>
+<div id="regulator_menu"></div>
 
-<div id="game_controls"></div>
+<div id="game_panel">
+    <div id="game_screen"></div>
+
+    <div id="game_controls"></div>
+
+    <div id="simulation_controls">
+        <button id="start">Start</button>
+        <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
+    </div>
+</div>
+
+
+
 
 <!--game js call-->
 <script type="module" src="/static/games/segway/regulators.js" charset="UTF-8"></script>
-
 <script type="module" src="/static/games/segway/app.js" charset="UTF-8"></script>
 
-<button id="start">Start</button>
-<button id="pause">Pause</button>
-<button id="reset">Reset</button>
 
 <!--my logging paragraph-->
 <p id="demo"></p>

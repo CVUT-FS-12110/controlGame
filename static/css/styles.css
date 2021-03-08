@@ -14,3 +14,7 @@ canvas {
 .pointer {
     cursor: pointer;
 }
+
+#regulator_menu {
+    display: none;
+}

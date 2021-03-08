@@ -26,15 +26,17 @@ let l = 1.0; // pendulum length
 let lt = l/2; // pendulum center of mass
 let inertia = (4*mP*lt**2)/3; // pendulum inertia
 
-//pid parameters
-let r0 = -50;
-let rI = -20;
-let rD = -10;
-let e;
-let w = 0;
-let eLast = 0;
-let eLast2 = 0;
-let uLast = 0;
+
+let params_pid = {
+    r0: -50,
+    rI: -20,
+    rD: -10,
+    e: 0,
+    w: 0,
+    eLast: 0,
+    eLast2: 0,
+    uLast: 0
+}
 
 
 // load canvas
@@ -257,10 +259,10 @@ resetButton.onclick = function(){
         clearInterval(simulation);
         simulation = 0;
     }
-    // pid reset
-    eLast = 0;
-    eLast2 = 0;
-    uLast = 0;
+    // pid reset TODO manage globally
+//    eLast = 0;
+//    eLast2 = 0;
+//    uLast = 0;
 
     //simulation reset
     segway.x = x0;
@@ -332,18 +334,26 @@ function updateGameArea(){
     //clear force canvas
     ctxForce.clearRect(0, 0, canvasForce.width, canvasForce.height);
 
-    //draw force center line
     forceLine.drawForce();
+    mouseForce();
 
-    //draw and calculate force
-//    mouseForce();
-
-    //pid
-    e = w - segway.fi;
-    f = pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT);
-    eLast2 = eLast;
-    eLast = e;
-    uLast = f;
+    // control
+     if (window.regulator === "pid") {
+        params_pid.e = params_pid.w - segway.fi;
+        f = pid(
+            params_pid.e,
+            params_pid.eLast,
+            params_pid.eLast2,
+            params_pid.uLast,
+            params_pid.r0,
+            params_pid.rI,
+            params_pid.rD,
+            deltaT
+        );
+        params_pid.eLast2 = params_pid.eLast;
+        params_pid.eLast = params_pid.e;
+        params_pid.uLast = f;
+    }
 
     //call solver
     result = solvePendulumNonLinear(segway.x, segway.speedX, segway.fi, segway.speedFi,f,deltaT, mC, mP, inertia, b, lt, -g);
