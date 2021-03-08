@@ -224,26 +224,13 @@ class ImgComponent{
 }
 
 
-// Start stop and reset simulation by clicking on buttons
-let simulation = 0;
-let startButton = document.getElementById("start");
-let pauseButton = document.getElementById("pause");
-let resetButton = document.getElementById("reset");
-
-startButton.onclick = function(){
+function start_game() {
     if (simulation === 0) {
         simulation = setInterval(updateGameArea, deltaT * 1000);
     }
 }
 
-pauseButton.onclick = function(){
-    if (simulation !== 0) {
-        clearInterval(simulation);
-        simulation = 0;
-    }
-}
-
-resetButton.onclick = function(){
+function reset_game() {
     if (simulation !== 0) {
         clearInterval(simulation);
         simulation = 0;
@@ -265,6 +252,29 @@ resetButton.onclick = function(){
     segway.transform();
     segway.draw();
 }
+
+function pause_game() {
+    if (simulation !== 0) {
+        clearInterval(simulation);
+        simulation = 0;
+    }
+}
+
+$("#start").click(function() {
+    start_game()
+});
+
+$("#reset").click(function() {
+    reset_game()
+});
+
+$("#pause").click(function() {
+    pause_game()
+});
+
+
+let simulation = 0;
+
 
 // image loading check TODO: probably needs more robust solution.
 window.onload = function (){

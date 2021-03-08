@@ -1,5 +1,8 @@
 let regulators = ["manual", "pid"];
 
+function init_regulator_manual() {
+    $("#game_controls").show()
+}
 
 function init_regulator_pid() {
     window.params_pid = {
@@ -13,6 +16,7 @@ function init_regulator_pid() {
         uLast: 0
     }
 
+
     $("#regulator_settings").html(
         "<div><label>P</label>" + "<input type='number' name='r0' value='" + window.params_pid.r0 + "'></div>" +
         "<div><label>I</label>" + "<input type='number' name='rI' value='" + window.params_pid.rI + "'></div>" +
@@ -21,20 +25,24 @@ function init_regulator_pid() {
     );
 
     $("#regulator_settings button").click(function() {
-        alert("set");
+        // TODO: validace vstupu
+        window.params_pid.r0 = parseFloat($("#regulator_settings input[name='r0']").val());
+        window.params_pid.rI = parseFloat($("#regulator_settings input[name='rI']").val());
+        window.params_pid.rD = parseFloat($("#regulator_settings input[name='rD']").val());
+        $("#regulator_settings").hide();
+        $("#reset_regulator").show();
+        $("#game_panel").show();
     });
     $("#regulator_settings").show();
-
 }
 
-function init_regulator_manual() {
-    $("#game_controls").show()
-}
+
 
 function switch_regulator(name) {
     window.regulator = name;
     $("#game_controls").hide()
     REGULATORS[name]();
+
 }
 
 
@@ -67,5 +75,11 @@ show_regulator_menu(regulators)
 window.regulator;
 switch_regulator("manual");
 
+$("#reset_regulator").click(function() {
+    $("#regulator_settings").show();
+    $("#reset_regulator").hide();
+
+    $("#game_panel").hide();
+});
 
 

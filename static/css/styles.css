@@ -19,3 +19,6 @@ canvas {
     display: none;
 }
 
+#reset_regulator, #choose_regulator {
+    display: none;
+}
