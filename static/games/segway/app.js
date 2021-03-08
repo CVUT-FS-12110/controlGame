@@ -8,38 +8,45 @@ function create_html() {
     let hei = Math.round(wid / 5 * 4)
 
     let game_screen_html = '<canvas id="pidGame" width="' + wid + '" height="' + hei + '" ></canvas>';
-    $("#game_screen").append(game_screen_html);
+    $("#game_screen").html(game_screen_html);
 
     let game_controls_html = '<canvas class="pointer" id="force" width="' + wid + '" height="40" ></canvas>'
-    $("#game_controls").append(game_controls_html);
+    $("#game_controls").html(game_controls_html);
 }
 
-create_html()
+function game_init() {
+    create_html()
 
-//model parameters
-window.game_params = {
-    mC: 1.0, //Cart mass
-    mP: 0.5, // Pendulum mass
-    b:  0.9, // Cart friction
-    g: 9.81, // gravity
-    l: 1.0, // pendulum length
+    //model parameters
+    window.game_params = {
+        mC: 1.0, //Cart mass
+        mP: 0.5, // Pendulum mass
+        b:  0.9, // Cart friction
+        g: 9.81, // gravity
+        l: 1.0, // pendulum length
+    };
+    window.game_params.inertia = (4 * window.game_params.mP * window.game_params.lt**2) / 3;
+    window.game_params.lt = window.game_params.l / 2; // pendulum center of mass
 }
-window.game_params.inertia = (4 * window.game_params.mP * window.game_params.lt**2) / 3;
-window.game_params.lt = window.game_params.l / 2 // pendulum center of mass
 
+
+game_init()
 
 // load canvas
-const canvas = document.getElementById("pidGame");
-const canvasForce = document.getElementById("force");
-const ctx = canvas.getContext("2d");
-const ctxForce = canvasForce.getContext("2d");
+window.canvas_params = {};
+window.canvas_params.canvas = document.getElementById("pidGame");
+window.canvas_params.canvasForce = document.getElementById("force");
+window.canvas_params.ctx = window.canvas_params.canvas.getContext("2d");
+window.canvas_params.ctxForce = window.canvas_params.canvasForce.getContext("2d");
+
+
 
 // 100 px for every 500px of canvas width
-const m2px = 500 / canvas.width * 100; // ?
+const m2px = 500 / window.canvas_params.canvas.width * 100; // ?
 
 
 //segway image parameters
-const segwayScale = 500 / canvas.width * 3;
+const segwayScale = 500 / window.canvas_params.canvas.width * 3;
 const segwayAxis = {
     y: 454/segwayScale, //segway rotation axis
     x: 75/segwayScale  //segway rotation axis
@@ -48,12 +55,12 @@ const segwayAxis = {
 //datetime and force init
 // let d = new Date();
 let f = 0;
-let forceScale = 500 / canvas.width * 0.05; // TODO: What is that?
+let forceScale = 500 / window.canvas_params.canvas.width * 0.05; // TODO: What is that?
 
 
 //model init conditions
-let x0 = (canvas.width / 2 - (segwayImage.width / 2 / segwayScale)) / m2px;
-let y0 = (canvas.height / 3) / m2px;
+let x0 = (window.canvas_params.canvas.width / 2 - (segwayImage.width / 2 / segwayScale)) / m2px;
+let y0 = (window.canvas_params.canvas.height / 3) / m2px;
 let xDot0 = 0.0;
 let fi0 = 0.5;
 let fiDot0 = 0;
@@ -73,32 +80,32 @@ let mouseCoords = {
 }
 
 //get canvas position
-let canvasRect = canvas.getBoundingClientRect();
-let xCanvas =  canvasRect.left;
-let yCanvas = canvasRect.top;
+window.canvas_params.canvasRect = window.canvas_params.canvas.getBoundingClientRect();
+window.canvas_params.xCanvas =  window.canvas_params.canvasRect.left;
+window.canvas_params.yCanvas = window.canvas_params.canvasRect.top;
 
-let canvasRectForce = canvasForce.getBoundingClientRect();
-let xCanvasForce =  canvasRectForce.left;
-let yCanvasForce = canvasRectForce.top - yCanvas;
+window.canvas_params.canvasRectForce = window.canvas_params.canvasForce.getBoundingClientRect();
+window.canvas_params.xCanvasForce =  window.canvas_params.canvasRectForce.left;
+window.canvas_params.yCanvasForce = window.canvas_params.canvasRectForce.top - window.canvas_params.yCanvas;
 
 // force scale center
 let forceReference = {
-    x: canvasForce.width / 2,
-    y: canvasForce.height
+    x: window.canvas_params.canvasForce.width / 2,
+    y: window.canvas_params.canvasForce.height
 }
 
 // TODO: think about better mouse position and button reading
 //get mouse position when mouse is moving
 window.onmousemove = function(e) {
-    mouseCoords.x = e.clientX - xCanvas; // mouse position relative to canvas corner
-    mouseCoords.y = e.clientY - yCanvas; // mouse position relative to canvas corner
+    mouseCoords.x = e.clientX - window.canvas_params.xCanvas; // mouse position relative to canvas corner
+    mouseCoords.y = e.clientY - window.canvas_params.yCanvas; // mouse position relative to canvas corner
     mouseCoords.b = e.buttons; // mouse button
     }
 
 //get mouse position when mouse does not move and button is down
 window.onmousedown = function(e) {
-    mouseCoords.x = e.clientX - xCanvas; // mouse position relative to canvas corner
-    mouseCoords.y = e.clientY - yCanvas; // mouse position relative to canvas corner
+    mouseCoords.x = e.clientX - window.canvas_params.xCanvas; // mouse position relative to canvas corner
+    mouseCoords.y = e.clientY - window.canvas_params.yCanvas; // mouse position relative to canvas corner
     mouseCoords.b = e.buttons; // mouse button
 }
 
@@ -119,14 +126,14 @@ class componentRect{
 
     // draw in game canvas
     drawGame(){
-        ctx.fillStyle = this.color;
-        ctx.fillRect(0, 0, this.width, this.height);
+        window.canvas_params.ctx.fillStyle = this.color;
+        window.canvas_params.ctx.fillRect(0, 0, this.width, this.height);
     }
 
     //draw in force canvas
     drawForce(){
-        ctxForce.fillStyle = this.color;
-        ctxForce.fillRect(this.x, this.y, this.width, this.height);
+        window.canvas_params.ctxForce.fillStyle = this.color;
+        window.canvas_params.ctxForce.fillRect(this.x, this.y, this.width, this.height);
     }
 }
 
@@ -163,31 +170,31 @@ class componentArrow{
     //draw in force canvas
     drawForce(){
         //draw arrow triangle
-        ctxForce.beginPath();
-        ctxForce.moveTo(this.x1, this.y1);
-        ctxForce.lineTo(this.x2, this.y2);
-        ctxForce.lineTo(this.x3, this.y3);
-        ctxForce.fillStyle = this.color;
-        ctxForce.fill();
+        window.canvas_params.ctxForce.beginPath();
+        window.canvas_params.ctxForce.moveTo(this.x1, this.y1);
+        window.canvas_params.ctxForce.lineTo(this.x2, this.y2);
+        window.canvas_params.ctxForce.lineTo(this.x3, this.y3);
+        window.canvas_params.ctxForce.fillStyle = this.color;
+        window.canvas_params.ctxForce.fill();
 
         // draw arrow line
-        ctxForce.fillStyle = this.color;
-        ctxForce.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
+        window.canvas_params.ctxForce.fillStyle = this.color;
+        window.canvas_params.ctxForce.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
     }
 
     //draw in game canvas
     drawGame(){
         //draw arrow triangle
-        ctx.beginPath();
-        ctx.moveTo(this.x1, this.y1);
-        ctx.lineTo(this.x2, this.y2);
-        ctx.lineTo(this.x3, this.y3);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+        window.canvas_params.ctx.beginPath();
+        window.canvas_params.ctx.moveTo(this.x1, this.y1);
+        window.canvas_params.ctx.lineTo(this.x2, this.y2);
+        window.canvas_params.ctx.lineTo(this.x3, this.y3);
+        window.canvas_params.ctx.fillStyle = this.color;
+        window.canvas_params.ctx.fill();
 
         // draw arrow line
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
+        window.canvas_params.ctx.fillStyle = this.color;
+        window.canvas_params.ctx.fillRect(this.xRect, this.y1 - 2, Math.abs(this.x2-forceReference.x), 4);
     }
 }
 
@@ -212,13 +219,13 @@ class ImgComponent{
     }
 
     draw(){
-        ctx.drawImage(this.img, 0, 0, this.width, this.height);
+        window.canvas_params.ctx.drawImage(this.img, 0, 0, this.width, this.height);
     }
     transform(){
-        ctx.setTransform(1, 0, 0, 1, 0, 0);// reset coordinates system
-        ctx.transform(1, 0, 0, 1, this.x*m2px + segwayAxis.x, this.y*m2px + segwayAxis.y);// shift to the axis
-        ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);// rotate
-        ctx.transform(1, 0, 0, 1, -segwayAxis.x, -segwayAxis.y); // shift to the img corner
+        window.canvas_params.ctx.setTransform(1, 0, 0, 1, 0, 0);// reset coordinates system
+        window.canvas_params.ctx.transform(1, 0, 0, 1, this.x*m2px + segwayAxis.x, this.y*m2px + segwayAxis.y);// shift to the axis
+        window.canvas_params.ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);// rotate
+        window.canvas_params.ctx.transform(1, 0, 0, 1, -segwayAxis.x, -segwayAxis.y); // shift to the img corner
     }
 
 }
@@ -248,7 +255,7 @@ window.reset_game = function()  {
     f = 0;
 
     //clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    window.canvas_params.ctx.clearRect(0, 0, window.canvas_params.canvas.width, window.canvas_params.canvas.height);
     segway.transform();
     segway.draw();
 }
@@ -292,7 +299,7 @@ window.onload = function (){
 //function for force calculation and visualization according to mouse position in force canvas
 function mouseForce(){
     //check if the mouse is in the force field and left button is down
-    if (mouseCoords.b === 1 && (yCanvasForce < mouseCoords.y) && ((yCanvasForce + canvasForce.height) > mouseCoords.y)) {
+    if (mouseCoords.b === 1 && (window.canvas_params.yCanvasForce < mouseCoords.y) && ((window.canvas_params.yCanvasForce + window.canvas_params.canvasForce.height) > mouseCoords.y)) {
         //force saturation
         if (mouseCoords.x < 0) {
             f = (-forceReference.x)*forceScale;
@@ -301,11 +308,11 @@ function mouseForce(){
             forceArrow.update(0);
             forceArrow.drawForce();
         }
-        else if (mouseCoords.x > canvasForce.width) {
-            f = (canvasForce.width - forceReference.x)*forceScale;
+        else if (mouseCoords.x > window.canvas_params.canvasForce.width) {
+            f = (window.canvas_params.canvasForce.width - forceReference.x)*forceScale;
 
             //draw saturated arrow
-            forceArrow.update(canvasForce.width);
+            forceArrow.update(window.canvas_params.canvasForce.width);
             forceArrow.drawForce();
         }
         //when the mouse is in force canvas
@@ -325,13 +332,13 @@ function mouseForce(){
 // function for calling simulation and animation update
 function updateGameArea(){
     //clear game canvas
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
+    window.canvas_params.ctx.save();
+    window.canvas_params.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    window.canvas_params.ctx.clearRect(0, 0, window.canvas_params.canvas.width, window.canvas_params.canvas.height);
+    window.canvas_params.ctx.restore();
 
     //clear force canvas
-    ctxForce.clearRect(0, 0, canvasForce.width, canvasForce.height);
+    window.canvas_params.ctxForce.clearRect(0, 0, window.canvas_params.canvasForce.width, window.canvas_params.canvasForce.height);
 
     forceLine.drawForce();
     mouseForce();
@@ -380,8 +387,8 @@ function updateGameArea(){
         segway.x = 0;
         segway.speedX = 0;
     }
-    if (segway.x*m2px >= canvas.width - 50){
-        segway.x = (canvas.width-50)/m2px;
+    if (segway.x*m2px >= window.canvas_params.width - 50){
+        segway.x = (window.canvas_params.canvas.width-50)/m2px;
         segway.speedX = 0;
     }
 
