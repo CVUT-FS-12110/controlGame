@@ -23,25 +23,3 @@ export function pid(e, eLast, eLast2, uLast, r0, rI, rD, deltaT) {
     return uLast + r0*(e - eLast) + rI*e*deltaT + rD*(e - 2*eLast + eLast2)/deltaT
 }
 
-
-//euler solver for (mC + mP).x" + b.x' = F
-// export function solve(x1, x2, F, deltaT, mC, mP, b) {
-//     return {
-//         x1: deltaT * x2,
-//         x2: (((-deltaT*b)/(mC+mP)) + 1)*x2 + ((deltaT*b)/(mC+mP))*F
-//     };
-// }
-
-// export function solvePendulum(x, xDot, fi, fiDot, u, deltaT, mC, mP, inertia, b, lt, g) {
-//     let denom =  inertia*(mC+mP) + mC*mP*lt**2;
-//     let x2 = (1 + deltaT*(-(inertia+mP*lt**2)*b/denom))*xDot + deltaT*((mP**2*g*lt**2)/denom)*fi;
-//     let x3 = fi + deltaT*fiDot;
-//     let x4 = deltaT*(-(mP*lt*b)/denom)*xDot + deltaT*(mP*g*lt*(mC+mP)/denom)*fi + fiDot;
-//     return {
-//         x1: x + deltaT*x2,
-//         x2: xDot + (deltaT*(-(inertia+mP*lt**2)*b/denom))*x2 + deltaT*((mP**2*g*lt**2)/denom)*x3,
-//         x3: fi + deltaT*x4,
-//         x4: fiDot + deltaT*(-(mP*lt*b)/denom)*x2 + deltaT*(mP*g*lt*(mC+mP)/denom)*x3
-//     }
-// }
-

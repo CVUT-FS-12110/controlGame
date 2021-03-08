@@ -2,6 +2,28 @@ let regulators = ["manual", "pid"];
 
 
 function init_regulator_pid() {
+    window.params_pid = {
+        r0: -50,
+        rI: -20,
+        rD: -10,
+        e: 0,
+        w: 0,
+        eLast: 0,
+        eLast2: 0,
+        uLast: 0
+    }
+
+    $("#regulator_settings").html(
+        "<div><label>P</label>" + "<input type='number' name='r0' value='" + window.params_pid.r0 + "'></div>" +
+        "<div><label>I</label>" + "<input type='number' name='rI' value='" + window.params_pid.rI + "'></div>" +
+        "<div><label>D</label>" + "<input type='number' name='rD' value='" + window.params_pid.rD + "'></div>" +
+        "<div><button>Set</button></div>"
+    );
+
+    $("#regulator_settings button").click(function() {
+        alert("set");
+    });
+    $("#regulator_settings").show();
 
 }
 
@@ -44,5 +66,6 @@ let REGULATORS = {
 show_regulator_menu(regulators)
 window.regulator;
 switch_regulator("manual");
+
 
 

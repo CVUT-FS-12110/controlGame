@@ -15,6 +15,7 @@ canvas {
     cursor: pointer;
 }
 
-#regulator_menu {
+#game_controls, #regulator_menu, #regulator_settings {
     display: none;
 }
+

@@ -27,17 +27,6 @@ let lt = l/2; // pendulum center of mass
 let inertia = (4*mP*lt**2)/3; // pendulum inertia
 
 
-let params_pid = {
-    r0: -50,
-    rI: -20,
-    rD: -10,
-    e: 0,
-    w: 0,
-    eLast: 0,
-    eLast2: 0,
-    uLast: 0
-}
-
 
 // load canvas
 const canvas = document.getElementById("pidGame");
@@ -339,20 +328,20 @@ function updateGameArea(){
 
     // control
      if (window.regulator === "pid") {
-        params_pid.e = params_pid.w - segway.fi;
+        window.params_pid.e = window.params_pid.w - segway.fi;
         f = pid(
-            params_pid.e,
-            params_pid.eLast,
-            params_pid.eLast2,
-            params_pid.uLast,
-            params_pid.r0,
-            params_pid.rI,
-            params_pid.rD,
+            window.params_pid.e,
+            window.params_pid.eLast,
+            window.params_pid.eLast2,
+            window.params_pid.uLast,
+            window.params_pid.r0,
+            window.params_pid.rI,
+            window.params_pid.rD,
             deltaT
         );
-        params_pid.eLast2 = params_pid.eLast;
-        params_pid.eLast = params_pid.e;
-        params_pid.uLast = f;
+        window.params_pid.eLast2 = window.params_pid.eLast;
+        window.params_pid.eLast = window.params_pid.e;
+        window.params_pid.uLast = f;
     }
 
     //call solver
