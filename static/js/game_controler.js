@@ -1,5 +1,5 @@
-import {regulator_PID} from "/static/regulators/pid.js";
-import {regulator_manual} from "/static/regulators/manual.js";
+import {regulator_PID} from "/static/regulators/pid/app.js";
+import {regulator_manual} from "/static/regulators/manual/app.js";
 
 let REGULATORS = {
     "manual": regulator_manual,

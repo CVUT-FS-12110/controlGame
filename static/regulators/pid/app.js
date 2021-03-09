@@ -23,11 +23,12 @@ export class regulator_PID {
             "<div><button>Set</button></div>"
         );
 
+        var self = this;
         $("#regulator_settings button").click(function() {
             // TODO: validace vstupu
-            this.params.r0 = parseFloat($("#regulator_settings input[name='r0']").val());
-            this.params.rI = parseFloat($("#regulator_settings input[name='rI']").val());
-            this.params.rD = parseFloat($("#regulator_settings input[name='rD']").val());
+            self.params.r0 = parseFloat($("#regulator_settings input[name='r0']").val());
+            self.params.rI = parseFloat($("#regulator_settings input[name='rI']").val());
+            self.params.rD = parseFloat($("#regulator_settings input[name='rD']").val());
             $("#regulator_settings").hide();
             $("#reset_regulator").show();
             $("#game_panel").show();
