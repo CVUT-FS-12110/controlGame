@@ -6,16 +6,12 @@ let REGULATORS = {
     "pid": regulator_PID
 }
 
-// place holders
-window.start_game = function() {}
-window.reset_game = function() {}
-window.pause_game = function() {}
 
 function switch_regulator(name) {
     window.regulator = new REGULATORS[name]();
     $("#game_controls").hide()
     window.regulator.init();
-    window.reset_game();
+    window.game.game_reset();
 }
 
 function show_regulator_menu(regulators) {
@@ -34,8 +30,6 @@ function show_regulator_menu(regulators) {
 
 }
 
-// set and bind defaults
-
 show_regulator_menu(window.available_regulators)
 window.regulator;
 switch_regulator("manual");
@@ -46,16 +40,21 @@ $("#reset_regulator").click(function() {
     $("#game_panel").hide();
 });
 
+
+
 $("#start").click(function() {
-    window.start_game();
+    window.game.game_start();
 });
 
 $("#reset").click(function() {
-    window.reset_game();
+    window.game.game_reset();
 });
 
 $("#pause").click(function() {
-    window.pause_game();
+    window.game.game_pause();
 });
+
+
+
 
 

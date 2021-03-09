@@ -38,7 +38,6 @@ class ImgComponent{
 
 }
 
-
 class App {
 
     constructor() {
@@ -253,21 +252,6 @@ class App {
 
 }
 
-
-
-
 window.game = new App();
-
-window.start_game = function() {
-    window.game.game_start();
-}
-
-window.pause_game = function()  {
-    window.game.game_pause();
-}
-
-window.reset_game = function()  {
-    window.game.game_reset();
-}
-
+window.available_regulators = ["manual", "pid"];
 
