@@ -19,7 +19,7 @@ class ImgComponent{
         this.img = img;
 
         this.x = (canvas.width / 2 - (img.width / 2 / this.scale)) / this.m2px;
-        this.y = (canvas.height / 3) / this.m2px;
+        this.y = (canvas.height / 9) / this.m2px;
         this.speedX = speedX;
         this.fi = fi;
         this.speedFi = speedFi;
@@ -57,7 +57,7 @@ class App {
 
     create_html() {
         let wid = $("#game_screen").width();
-        let hei = Math.round(wid / 5 * 4);
+        let hei = Math.round(wid / 5 * 2.5);
 
         let game_screen_html = '<canvas id="pidGame" width="' + wid + '" height="' + hei + '" ></canvas>';
         $("#game_screen").html(game_screen_html);
@@ -157,23 +157,23 @@ class App {
         this.clear_canvas();
 
         // control
-//        if (window.regulator === "pid") {
-//            window.params_pid.e = window.params_pid.w - this.segway.fi;
-//            window.params.f = pid(
-//                window.params_pid.e,
-//                window.params_pid.eLast,
-//                window.params_pid.eLast2,
-//                window.params_pid.uLast,
-//                window.params_pid.r0,
-//                window.params_pid.rI,
-//                window.params_pid.rD,
-//                window.params.deltaT
-//            );
-//            window.params_pid.eLast2 = window.params_pid.eLast;
-//            window.params_pid.eLast = window.params_pid.e;
-//            window.params_pid.uLast = window.params.f;
-//        }
-//
+        if (window.regulator.name === "pid") {
+            window.regulator.params.e = window.regulator.params.w - this.segway.fi;
+            this.params.f = window.regulator.execute(
+                window.regulator.params.e,
+                window.regulator.params.eLast,
+                window.regulator.params.eLast2,
+                window.regulator.params.uLast,
+                window.regulator.params.r0,
+                window.regulator.params.rI,
+                window.regulator.params.rD,
+                this.params.deltaT
+            );
+            window.regulator.params.eLast2 = window.regulator.params.eLast;
+            window.regulator.params.eLast = window.regulator.params.e;
+            window.regulator.params.uLast = this.params.f;
+        }
+
         //call solver
         this.result = this.solvePendulumNonLinear(
             this.segway.x,

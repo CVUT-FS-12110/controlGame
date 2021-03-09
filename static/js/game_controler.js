@@ -2,8 +2,8 @@ import {regulator_PID} from "/static/regulators/pid.js";
 import {regulator_manual} from "/static/regulators/manual.js";
 
 let REGULATORS = {
-    "manual": new regulator_manual,
-    "pid": new regulator_PID()
+    "manual": regulator_manual,
+    "pid": regulator_PID
 }
 
 // place holders
@@ -11,11 +11,10 @@ window.start_game = function() {}
 window.reset_game = function() {}
 window.pause_game = function() {}
 
-
 function switch_regulator(name) {
-    window.regulator = name;
+    window.regulator = new REGULATORS[name]();
     $("#game_controls").hide()
-    REGULATORS[name].init();
+    window.regulator.init();
     window.reset_game();
 }
 
