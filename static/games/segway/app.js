@@ -78,10 +78,7 @@ class App {
         this.clear_canvas();
         this.set_parameters();
 
-        // pid reset TODO manage globally
-    //    eLast = 0;
-    //    eLast2 = 0;
-    //    uLast = 0;
+        window.regulator.reset();
     }
 
 
@@ -111,7 +108,6 @@ class App {
         let self = this;
 
         // game params
-
         this.game_params = {
             mC: 1.0, //Cart mass
             mP: 0.5, // Pendulum mass
@@ -130,13 +126,9 @@ class App {
         // params
         this.params = {};
         this.params.f = 0;
-        //this.params.forceScale = 500 / this.canvas_params.canvas.width * 0.05; // TODO: What is that?
-
         this.params.xDot0 = 0.0;
         this.params.fi0 = 0.5;
         this.params.fiDot0 = 0;
-
-        // setting a period for simulation animation [s]
         this.params.deltaT = 0.025;
 
 

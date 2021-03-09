@@ -15,6 +15,7 @@ export class regulator_PID {
     }
 
     init() {
+        this.reset()
 
         $("#regulator_settings").html(
             "<div><label>P</label>" + "<input type='number' name='r0' value='" + this.params.r0 + "'></div>" +
@@ -38,6 +39,12 @@ export class regulator_PID {
 
     execute(e, eLast, eLast2, uLast, r0, rI, rD, deltaT) {
         return uLast + r0*(e - eLast) + rI*e*deltaT + rD*(e - 2*eLast + eLast2)/deltaT
+    }
+
+    reset() {
+        this.params.eLast = 0;
+        this.params.eLast2 = 0;
+        this.params.uLast = 0;
     }
 
 }

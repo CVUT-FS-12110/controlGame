@@ -11,4 +11,6 @@ export class regulator_manual {
 
     execute() {}
 
+    reset() {}
+
 }

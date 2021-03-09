@@ -3,45 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>The Game</title>
-    <link rel="stylesheet" href="/static/games/segway/styles.css">
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/games/segway/styles.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 
 <body>
 
-<h1>The Game</h1>
+    <h1>The Game</h1>
 
-<div id="regulator_panel">
+    <div id="regulator_panel">
 
-    <div id="regulator_menu"></div>
+        <div id="regulator_menu"></div>
 
-    <div id="regulator_settings"></div>
+        <div id="regulator_settings"></div>
 
-    <button id="choose_regulator">Choose different regulator</button>
-    <button id="reset_regulator">Change regulator values</button>
+        <button id="choose_regulator">Choose different regulator</button>
+        <button id="reset_regulator">Change regulator values</button>
 
-</div>
-
-
-<div id="game_panel">
-    <div id="game_screen"></div>
-
-    <div id="game_controls"></div>
-
-    <div id="simulation_controls">
-        <button id="start">Start</button>
-        <button id="pause">Pause</button>
-        <button id="reset">Reset</button>
     </div>
-</div>
 
 
-<script type="module" src="/static/games/segway/app.js" charset="UTF-8"></script>
-<script type="module" src="/static/js/game_controler.js" charset="UTF-8"></script>
+    <div id="game_panel">
+        <div id="game_screen"></div>
+
+        <div id="game_controls"></div>
+
+        <div id="simulation_controls">
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
 
 
-
+    <script type="module" src="/static/games/segway/app.js" charset="UTF-8"></script>
+    <script type="module" src="/static/js/game_controler.js" charset="UTF-8"></script>
 
 </body>
 </html>
