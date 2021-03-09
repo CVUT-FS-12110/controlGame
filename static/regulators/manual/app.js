@@ -1,12 +1,14 @@
 export class regulator_manual {
 
     constructor() {
-        this.name = "pid"
+        this.name = "manual"
         this.params = {};
     }
 
     init() {
         $("#game_controls").show()
     }
+
+    execute() {}
 
 }

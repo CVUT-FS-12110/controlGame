@@ -55,12 +55,57 @@ class App {
         this.set_parameters();
     }
 
+
+    game_start() {
+        var self = this;
+        if (this.simulation === 0) {
+            this.simulation = setInterval(function() { self.update(); }, this.params.deltaT * 1000);
+        }
+    }
+
+    game_pause() {
+        if (this.simulation !== 0) {
+            clearInterval(this.simulation);
+            this.simulation = 0;
+        }
+    }
+
+    game_reset() {
+        if (this.simulation !== 0) {
+            clearInterval(this.simulation);
+            this.simulation = 0;
+        }
+
+        this.clear_canvas();
+        this.set_parameters();
+
+        // pid reset TODO manage globally
+    //    eLast = 0;
+    //    eLast2 = 0;
+    //    uLast = 0;
+    }
+
+
     create_html() {
         let wid = $("#game_screen").width();
         let hei = Math.round(wid / 5 * 2.5);
 
         let game_screen_html = '<canvas id="pidGame" width="' + wid + '" height="' + hei + '" ></canvas>';
         $("#game_screen").html(game_screen_html);
+
+        let game_controls_html = '<input type="range" min="-1000" max="1000" value="0" class="slider" id="pendulum_game_slider">';
+        $("#game_controls").html(game_controls_html);
+
+        $("#pendulum_game_slider").mouseup(function(e) {
+            e.preventDefault();
+            $('#pendulum_game_slider').val(0);
+        });
+
+        var self = this;
+        $("#pendulum_game_slider").mousedown(function(e) {
+            self.game_start();
+        });
+
     }
 
     set_parameters() {
@@ -115,36 +160,6 @@ class App {
         }
     }
 
-    game_start() {
-        var self = this;
-        if (this.simulation === 0) {
-            this.simulation = setInterval(function() { self.update(); }, this.params.deltaT * 1000);
-        }
-    }
-
-    game_pause() {
-        if (this.simulation !== 0) {
-            clearInterval(this.simulation);
-            this.simulation = 0;
-        }
-    }
-
-    game_reset() {
-        if (this.simulation !== 0) {
-            clearInterval(this.simulation);
-            this.simulation = 0;
-        }
-
-        this.clear_canvas();
-        this.set_parameters();
-
-        // pid reset TODO manage globally
-    //    eLast = 0;
-    //    eLast2 = 0;
-    //    uLast = 0;
-    }
-
-
     clear_canvas() {
         this.canvas_params.ctx.save();
         this.canvas_params.ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -172,6 +187,10 @@ class App {
             window.regulator.params.eLast2 = window.regulator.params.eLast;
             window.regulator.params.eLast = window.regulator.params.e;
             window.regulator.params.uLast = this.params.f;
+        } else if (window.regulator.name === "manual") {
+            let slider_value = $('#pendulum_game_slider').val();
+            this.params.force_scale = 500 / this.canvas_params.canvas.width * 0.05; // TODO better force scale!
+            this.params.f = slider_value * this.params.force_scale;
         }
 
         //call solver
