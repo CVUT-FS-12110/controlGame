@@ -120,7 +120,6 @@ class App {
             self.game_params.b = parseFloat($("#model_settings input[name='b']").val());
             self.game_params.g = parseFloat($("#model_settings input[name='g']").val());
             self.game_params.l = parseFloat($("#model_settings input[name='l']").val());
-
         });
 
         // game field
