@@ -104,6 +104,7 @@ function create_plots() {
 window.controller;
 show_model_panel();
 create_plots();
+$("#pause").hide();
 
 window.plot = function(data, time_index) {
     console.log(data);
@@ -120,6 +121,8 @@ window.plot = function(data, time_index) {
 
 $("#start").click(function() {
     window.game.game_start();
+    $("#pause").show();
+    $("#start").hide();
 });
 
 $("#reset").click(function() {
@@ -130,6 +133,8 @@ $("#reset").click(function() {
 
 $("#pause").click(function() {
     window.game.game_pause();
+    $("#pause").hide();
+    $("#start").show();
 });
 
 $("#stepback_select_controller").click(function() {

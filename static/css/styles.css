@@ -15,3 +15,6 @@ canvas {
     display: none;
 }
 
+.modebar{
+      display: none !important;
+}

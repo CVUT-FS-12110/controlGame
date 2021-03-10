@@ -56,7 +56,7 @@ class App {
             {
                 id: "f",
                 title: "Force",
-                unit: "F"
+                unit: "N"
             },
             {
                 id: "fi",
