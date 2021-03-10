@@ -16,7 +16,11 @@ function hide_all() {
 }
 
 
-function show_controller_selection_panel(controllers) {
+function show_select_controller_panel() {
+    hide_all()
+    $("#stepback_controller").hide();
+
+    var controllers = window.available_controllers;
     $("#controller_menu").html("")
     var i;
     let html_src, name;
@@ -27,23 +31,39 @@ function show_controller_selection_panel(controllers) {
     };
 
     $("#controller_menu button").click(function() {
-        hide_all();
         let name = $( this ).attr('name');
-        window.controller = new CONTROLLERS[name]();
-        window.controller.init();
-        window.game.game_reset();
-        show_controller_panel();
+        show_controller_panel(name);
     });
 
     $("#select_controller_panel").show();
 }
 
-function show_controller_panel() {
+function show_controller_panel(name) {
+    hide_all();
+    $("#stepback_controller").hide();
+    $("#stepback_select_controller").show();
+
+    window.controller = new CONTROLLERS[name]();
+    window.controller.init();
+    window.game.game_reset();
+
+    $("#controller_panel .trigger").click(function() {
+        show_game_panel();
+        $("#stepback_controller").show();
+    });
+
     if (window.controller.name === "manual") {
-        $("#game_panel").show();
+        show_game_panel();
     } else {
         $("#controller_panel").show();
     }
+
+}
+
+function show_game_panel() {
+    hide_all();
+    $("#game_panel").show();
+    $("#stepback_select_controller").show();
 }
 
 
@@ -52,8 +72,7 @@ function show_model_panel() {
     $("#model_panel").show();
 
     $("#model_panel .trigger").click(function() {
-        hide_all()
-        show_controller_selection_panel(window.available_controllers);
+        show_select_controller_panel();
     });
 }
 
@@ -79,6 +98,13 @@ $("#pause").click(function() {
     window.game.game_pause();
 });
 
+$("#stepback_select_controller").click(function() {
+    show_select_controller_panel();
+});
+
+$("#stepback_controller").click(function() {
+    show_controller_panel(window.controller.name);
+});
 
 
 

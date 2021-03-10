@@ -7,12 +7,11 @@ canvas {
     width: 40%;
 }
 
-#game_controls {
-    display: none;
-}
-
 .pointer {
     cursor: pointer;
 }
 
+.stepback_button {
+    display: none;
+}
 
