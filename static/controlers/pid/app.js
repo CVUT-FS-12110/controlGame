@@ -34,7 +34,6 @@ export class controler_PID {
             $("#reset_controler").show();
             $("#game_panel").show();
         });
-        $("#controler_settings").show();
     }
 
     execute(e, eLast, eLast2, uLast, r0, rI, rD, deltaT) {

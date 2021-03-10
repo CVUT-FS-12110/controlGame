@@ -15,10 +15,4 @@ canvas {
     cursor: pointer;
 }
 
-#game_controls, #regulator_menu, #regulator_settings {
-    display: none;
-}
 
-#reset_regulator, #choose_regulator {
-    display: none;
-}

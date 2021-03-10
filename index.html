@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>The Game</title>
@@ -12,16 +12,27 @@
 
     <h1>The Game</h1>
 
-    <div id="controler_panel">
+    <button id="choose_controler">Choose different controler</button>
+    <button id="reset_controler">Change controler values</button>
 
+
+    <div id="model_panel">
+        <h2>Model settings</h2>
+        <div id="model_settings"></div>
+        <div><button class='trigger' button>Set</button></div>
+    </div>
+
+    <div id="select_controler_panel">
+        <h2>Choose controler</h2>
         <div id="controler_menu"></div>
+    </div>
 
+    <div id="controler_panel">
+        <h2>Controler settings</h2>
         <div id="controler_settings"></div>
 
-        <button id="choose_controler">Choose different controler</button>
-        <button id="reset_controler">Change controler values</button>
-
     </div>
+
 
 
     <div id="game_panel">

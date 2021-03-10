@@ -44,8 +44,14 @@ class Stick{
 class App {
 
     constructor() {
+        this.game_params = { // TODO possible default from constructor
+            mC: 1.0, //Cart mass
+            mP: 0.5, // Pendulum mass
+            b:  0.9, // Cart friction
+            g: 9.81, // gravity
+            l: 1.0, // pendulum length
+        };
         this.simulation = 0;
-        this.game_params = {};
         this.params = {};
         this.canvas_params = {};
         this.result = {};
@@ -86,6 +92,26 @@ class App {
 
 
     create_html() {
+        $("#model_settings").html(
+            "<div><label>Cart mass</label>" + "<input type='number' name='mC' value='" + this.game_params.mC + "'></div>" +
+            "<div><label>Pendulum mass</label>" + "<input type='number' name='mP' value='" + this.game_params.mP + "'></div>" +
+            "<div><label>Cart friction</label>" + "<input type='number' name='b' value='" + this.game_params.b + "'></div>" +
+            "<div><label>Gravity</label>" + "<input type='number' name='g' value='" + this.game_params.g + "'></div>" +
+            "<div><label>Pendulum length</label>" + "<input type='number' name='l' value='" + this.game_params.l + "'></div>"
+        );
+//        $("#model_settings").show();
+
+        var self = this;
+        $("#model_panel .trigger").click(function() {
+            // TODO: validace vstupu
+            self.params.mC = parseFloat($("#controler_settings input[name='mC']").val());
+            self.params.mP = parseFloat($("#controler_settings input[name='mP']").val());
+            self.params.b = parseFloat($("#controler_settings input[name='b']").val());
+            self.params.g = parseFloat($("#controler_settings input[name='g']").val());
+            self.params.l = parseFloat($("#controler_settings input[name='l']").val());
+        });
+
+        // game field
         let wid = $("#game_screen").width();
         let hei = Math.round(wid / 5 * 2.5);
 
@@ -111,13 +137,6 @@ class App {
         let self = this;
 
         // game params
-        this.game_params = {
-            mC: 1.0, //Cart mass
-            mP: 0.5, // Pendulum mass
-            b:  0.9, // Cart friction
-            g: 9.81, // gravity
-            l: 1.0, // pendulum length
-        };
         this.game_params.inertia = (4 * this.game_params.mP * this.game_params.lt**2) / 3;
         this.game_params.lt = this.game_params.l / 2; // pendulum center of mass
 
@@ -249,4 +268,5 @@ class App {
 
 window.game = new App();
 window.available_controlers = ["manual", "pid"];
+
 

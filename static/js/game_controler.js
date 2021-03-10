@@ -8,14 +8,15 @@ let CONTROLERS = {
     "pid": controler_PID
 }
 
-function switch_controler(name) {
-    window.controler = new CONTROLERS[name]();
-    $("#game_controls").hide()
-    window.controler.init();
-    window.game.game_reset();
+function hide_all() {
+    $("#game_panel").hide();
+    $("#model_panel").hide();
+    $("#controler_panel").hide();
+    $("#select_controler_panel").hide();
 }
 
-function show_controler_menu(controlers) {
+
+function show_controler_selection_panel(controlers) {
     $("#controler_menu").html("")
     var i;
     let html_src, name;
@@ -24,23 +25,46 @@ function show_controler_menu(controlers) {
         html_src = '<button name="' + name + '">' + name + '</button>';
         $("#controler_menu").append(html_src)
     };
-    $("#controler_menu button").click(function() {
-        switch_controler($( this ).attr('name'))
-    });
-    $("#controler_menu").show()
 
+    $("#controler_menu button").click(function() {
+        hide_all();
+        let name = $( this ).attr('name');
+        window.controler = new CONTROLERS[name]();
+        window.controler.init();
+        window.game.game_reset();
+        show_controler_panel();
+    });
+
+    $("#select_controler_panel").show();
 }
 
-show_controler_menu(window.available_controlers)
+function show_controler_panel() {
+    if (window.controler.name === "manual") {
+        $("#game_panel").show();
+    } else {
+        $("#controler_panel").show();
+    }
+}
+
+
+function show_model_panel() {
+    hide_all();
+    $("#model_panel").show();
+
+    $("#model_panel .trigger").click(function() {
+        hide_all()
+        show_controler_selection_panel(window.available_controlers);
+    });
+}
+
 window.controler;
-switch_controler("manual");
+show_model_panel();
 
-$("#reset_controler").click(function() {
-    $("#controler_settings").show();
-    $("#reset_controler").hide();
-    $("#game_panel").hide();
-});
-
+//$("#reset_controler").click(function() {
+//    $("#controler_settings").show();
+//    $("#reset_controler").hide();
+//    $("#game_panel").hide();
+//});
 
 
 $("#start").click(function() {
@@ -54,6 +78,9 @@ $("#reset").click(function() {
 $("#pause").click(function() {
     window.game.game_pause();
 });
+
+
+
 
 
 
