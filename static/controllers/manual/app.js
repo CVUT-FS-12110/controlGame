@@ -1,4 +1,4 @@
-export class controler_manual {
+export class controller_manual {
 
     constructor() {
         this.name = "manual"

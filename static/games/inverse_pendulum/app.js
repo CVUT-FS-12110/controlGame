@@ -87,7 +87,7 @@ class App {
         this.clear_canvas();
         this.set_parameters();
 
-        window.controler.reset();
+        window.controller.reset();
     }
 
 
@@ -104,11 +104,11 @@ class App {
         var self = this;
         $("#model_panel .trigger").click(function() {
             // TODO: validace vstupu
-            self.params.mC = parseFloat($("#controler_settings input[name='mC']").val());
-            self.params.mP = parseFloat($("#controler_settings input[name='mP']").val());
-            self.params.b = parseFloat($("#controler_settings input[name='b']").val());
-            self.params.g = parseFloat($("#controler_settings input[name='g']").val());
-            self.params.l = parseFloat($("#controler_settings input[name='l']").val());
+            self.params.mC = parseFloat($("#controller_settings input[name='mC']").val());
+            self.params.mP = parseFloat($("#controller_settings input[name='mP']").val());
+            self.params.b = parseFloat($("#controller_settings input[name='b']").val());
+            self.params.g = parseFloat($("#controller_settings input[name='g']").val());
+            self.params.l = parseFloat($("#controller_settings input[name='l']").val());
         });
 
         // game field
@@ -185,22 +185,22 @@ class App {
         this.clear_canvas();
 
         // control
-        if (window.controler.name === "pid") {
-            window.controler.params.e = window.controler.params.w - this.stick.fi;
-            this.params.f = window.controler.execute(
-                window.controler.params.e,
-                window.controler.params.eLast,
-                window.controler.params.eLast2,
-                window.controler.params.uLast,
-                window.controler.params.r0,
-                window.controler.params.rI,
-                window.controler.params.rD,
+        if (window.controller.name === "pid") {
+            window.controller.params.e = window.controller.params.w - this.stick.fi;
+            this.params.f = window.controller.execute(
+                window.controller.params.e,
+                window.controller.params.eLast,
+                window.controller.params.eLast2,
+                window.controller.params.uLast,
+                window.controller.params.r0,
+                window.controller.params.rI,
+                window.controller.params.rD,
                 this.params.deltaT
             );
-            window.controler.params.eLast2 = window.controler.params.eLast;
-            window.controler.params.eLast = window.controler.params.e;
-            window.controler.params.uLast = this.params.f;
-        } else if (window.controler.name === "manual") {
+            window.controller.params.eLast2 = window.controller.params.eLast;
+            window.controller.params.eLast = window.controller.params.e;
+            window.controller.params.uLast = this.params.f;
+        } else if (window.controller.name === "manual") {
             let slider_value = $('#pendulum_game_slider').val();
             this.params.force_scale = 500 / this.canvas_params.canvas.width * 0.05; // TODO better force scale!
             this.params.f = slider_value * this.params.force_scale;
@@ -267,6 +267,6 @@ class App {
 }
 
 window.game = new App();
-window.available_controlers = ["manual", "pid"];
+window.available_controllers = ["manual", "pid"];
 
 
