@@ -20,8 +20,7 @@ export class controller_PID {
         $("#controller_settings").html(
             "<div><label>P</label>" + "<input type='number' name='r0' value='" + this.params.r0 + "'></div>" +
             "<div><label>I</label>" + "<input type='number' name='rI' value='" + this.params.rI + "'></div>" +
-            "<div><label>D</label>" + "<input type='number' name='rD' value='" + this.params.rD + "'></div>" +
-            "<div><button class='trigger'>Set</button></div>"
+            "<div><label>D</label>" + "<input type='number' name='rD' value='" + this.params.rD + "'></div>"
         );
 
         var self = this;

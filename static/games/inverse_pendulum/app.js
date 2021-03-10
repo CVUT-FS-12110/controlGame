@@ -33,7 +33,7 @@ class Stick{
     }
 
     transform(){
-        this.ctx.setTransform(1, 0, 0, 1, 0, 0);// reset coordinates system
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.transform(1, 0, 0, 1, this.x * this.m2px + this.axis.x, this.y * this.m2px + this.axis.y);// shift to the axis
         this.ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);// rotate
         this.ctx.transform(1, 0, 0, 1, -this.axis.x, -this.axis.y); // shift to the img corner
@@ -44,7 +44,7 @@ class Stick{
 class App {
 
     constructor() {
-        this.game_params = { // TODO possible default from constructor
+        this.game_params = { // TODO possible defaults from constructor
             mC: 1.0, //Cart mass
             mP: 0.5, // Pendulum mass
             b:  0.9, // Cart friction
@@ -87,7 +87,6 @@ class App {
         this.clear_canvas();
         this.set_parameters();
 
-        window.controller.reset();
     }
 
 
@@ -104,11 +103,12 @@ class App {
         var self = this;
         $("#model_panel .trigger").click(function() {
             // TODO: validace vstupu
-            self.params.mC = parseFloat($("#controller_settings input[name='mC']").val());
-            self.params.mP = parseFloat($("#controller_settings input[name='mP']").val());
-            self.params.b = parseFloat($("#controller_settings input[name='b']").val());
-            self.params.g = parseFloat($("#controller_settings input[name='g']").val());
-            self.params.l = parseFloat($("#controller_settings input[name='l']").val());
+            self.game_params.mC = parseFloat($("#model_settings input[name='mC']").val());
+            self.game_params.mP = parseFloat($("#model_settings input[name='mP']").val());
+            self.game_params.b = parseFloat($("#model_settings input[name='b']").val());
+            self.game_params.g = parseFloat($("#model_settings input[name='g']").val());
+            self.game_params.l = parseFloat($("#model_settings input[name='l']").val());
+
         });
 
         // game field

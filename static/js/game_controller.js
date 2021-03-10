@@ -19,6 +19,8 @@ function hide_all() {
 function show_select_controller_panel() {
     hide_all()
     $("#stepback_controller").hide();
+    $("#stepback_select_controller").hide();
+    $("#stepback_model").show();
 
     var controllers = window.available_controllers;
     $("#controller_menu").html("")
@@ -42,6 +44,7 @@ function show_controller_panel(name) {
     hide_all();
     $("#stepback_controller").hide();
     $("#stepback_select_controller").show();
+    $("#stepback_model").show();
 
     window.controller = new CONTROLLERS[name]();
     window.controller.init();
@@ -54,8 +57,10 @@ function show_controller_panel(name) {
 
     if (window.controller.name === "manual") {
         show_game_panel();
+        $("#game_controls").show();
     } else {
         $("#controller_panel").show();
+        $("#game_controls").hide();
     }
 
 }
@@ -70,6 +75,7 @@ function show_game_panel() {
 function show_model_panel() {
     hide_all();
     $("#model_panel").show();
+    $("#stepback_model").hide();
 
     $("#model_panel .trigger").click(function() {
         show_select_controller_panel();
@@ -79,11 +85,6 @@ function show_model_panel() {
 window.controller;
 show_model_panel();
 
-//$("#reset_controller").click(function() {
-//    $("#controller_settings").show();
-//    $("#reset_controller").hide();
-//    $("#game_panel").hide();
-//});
 
 
 $("#start").click(function() {
@@ -92,6 +93,7 @@ $("#start").click(function() {
 
 $("#reset").click(function() {
     window.game.game_reset();
+    window.controller.reset();
 });
 
 $("#pause").click(function() {
@@ -106,6 +108,10 @@ $("#stepback_controller").click(function() {
     show_controller_panel(window.controller.name);
 });
 
+$("#stepback_model").click(function() {
+    window.game.game_reset();
+    show_model_panel();
+});
 
 
 
