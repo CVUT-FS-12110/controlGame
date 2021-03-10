@@ -1,6 +1,7 @@
 // TODO draw ground in canvas
 // TODO disallow to crash stick to ground
 // TODO nonlinear manual force
+// TODO max force !
 
 class Stick{
 
@@ -51,6 +52,18 @@ class App {
             g: 9.81, // gravity
             l: 1.0, // pendulum length
         };
+        this.plots = [
+            {
+                id: "f",
+                title: "Force",
+                unit: "F"
+            },
+            {
+                id: "fi",
+                title: "Angle",
+                unit: "rad"
+            }
+        ];
         this.simulation = 0;
         this.params = {};
         this.canvas_params = {};
@@ -62,7 +75,6 @@ class App {
         this.create_html();
         this.set_parameters();
     }
-
 
     game_start() {
         var self = this;
@@ -152,6 +164,7 @@ class App {
         this.params.fi0 = 0.5;
         this.params.fiDot0 = 0;
         this.params.deltaT = 0.025;
+        this.time_index = 0;
 
 
         let stickImage = new Image();
@@ -241,6 +254,13 @@ class App {
         this.stick.transform();
         this.stick.draw();
 
+        // plot
+        let plot_data = {
+            fi: this.stick.fi,
+            f: this.params.f
+        }
+        this.time_index += this.params.deltaT;
+        window.plot(plot_data, this.time_index);
     }
 
 

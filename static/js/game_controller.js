@@ -82,10 +82,41 @@ function show_model_panel() {
     });
 }
 
+function create_plots() {
+    $("#charts_panel").html("");
+    var i;
+    for (i = 0; i < window.game.plots.length; i++) {
+        var layout = {
+            yaxis: {
+                title: {
+                  text: window.game.plots[i].title + " [" +  window.game.plots[i].unit + "]",
+                }
+              }
+        };
+        let plot_id = 'plot_' + window.game.plots[i].id;
+        $("#charts_panel").append("<div id='" + plot_id + "'></div>");
+        Plotly.plot(plot_id,[{
+            x:[], y:[], type:'line'
+        }], layout);
+    };
+}
+
 window.controller;
 show_model_panel();
+create_plots();
 
-
+window.plot = function(data, time_index) {
+    console.log(data);
+    var i;
+    var keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+        let plot_id = 'plot_' + keys[i];
+        Plotly.extendTraces(plot_id,{
+            x: [[time_index]],
+            y: [[data[keys[i]]]]
+        }, [0]);
+    };
+};
 
 $("#start").click(function() {
     window.game.game_start();
@@ -94,6 +125,7 @@ $("#start").click(function() {
 $("#reset").click(function() {
     window.game.game_reset();
     window.controller.reset();
+    create_plots();
 });
 
 $("#pause").click(function() {
@@ -111,6 +143,12 @@ $("#stepback_controller").click(function() {
 $("#stepback_model").click(function() {
     window.game.game_reset();
     show_model_panel();
+});
+
+$(".stepback_button").click(function() {
+    window.game.game_reset();
+    window.controller.reset();
+    create_plots();
 });
 
 
