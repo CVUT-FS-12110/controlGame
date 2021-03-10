@@ -1,13 +1,16 @@
+// TODO draw ground in canvas
+// TODO disallow to crash stick to ground
+// TODO nonlinear manual force
 
-class ImgComponent{
+class Stick{
 
     constructor(canvas_width, ctx, m2px) {
         this.ctx = ctx;
         this.m2px = m2px
         this.scale = 500 / canvas_width * 3;
-        this.segwayAxis = {
-            y: 454 / this.scale, //segway rotation axis
-            x: 75 / this.scale  //segway rotation axis
+        this.axis = {
+            y: 454 / this.scale,
+            x: 75 / this.scale
         };
     }
 
@@ -31,9 +34,9 @@ class ImgComponent{
 
     transform(){
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);// reset coordinates system
-        this.ctx.transform(1, 0, 0, 1, this.x * this.m2px + this.segwayAxis.x, this.y * this.m2px + this.segwayAxis.y);// shift to the axis
+        this.ctx.transform(1, 0, 0, 1, this.x * this.m2px + this.axis.x, this.y * this.m2px + this.axis.y);// shift to the axis
         this.ctx.transform(Math.cos(this.fi), Math.sin(this.fi), -Math.sin(this.fi), Math.cos(this.fi), 0, 0);// rotate
-        this.ctx.transform(1, 0, 0, 1, -this.segwayAxis.x, -this.segwayAxis.y); // shift to the img corner
+        this.ctx.transform(1, 0, 0, 1, -this.axis.x, -this.axis.y); // shift to the img corner
     }
 
 }
@@ -78,7 +81,7 @@ class App {
         this.clear_canvas();
         this.set_parameters();
 
-        window.regulator.reset();
+        window.controler.reset();
     }
 
 
@@ -132,22 +135,22 @@ class App {
         this.params.deltaT = 0.025;
 
 
-        let segwayImage = new Image();
-        segwayImage.src = '/static/games/segway/segway.png';
+        let stickImage = new Image();
+        stickImage.src = '/static/games/inverse_pendulum/segway.png';
 
-        this.segway = new ImgComponent(
+        this.stick = new Stick(
             this.canvas_params.canvas.width,
             this.canvas_params.ctx,
             this.canvas_params.m2px
             );
 
-        segwayImage.onload = function(e){
+        stickImage.onload = function(e){
 
-            self.segway.setup(segwayImage, self.params.fi0,
+            self.stick.setup(stickImage, self.params.fi0,
                     self.params.xDot0, self.params.fiDot0, self.canvas_params.canvas
                     );
-            self.segway.transform();
-            self.segway.draw();
+            self.stick.transform();
+            self.stick.draw();
         }
     }
 
@@ -163,22 +166,22 @@ class App {
         this.clear_canvas();
 
         // control
-        if (window.regulator.name === "pid") {
-            window.regulator.params.e = window.regulator.params.w - this.segway.fi;
-            this.params.f = window.regulator.execute(
-                window.regulator.params.e,
-                window.regulator.params.eLast,
-                window.regulator.params.eLast2,
-                window.regulator.params.uLast,
-                window.regulator.params.r0,
-                window.regulator.params.rI,
-                window.regulator.params.rD,
+        if (window.controler.name === "pid") {
+            window.controler.params.e = window.controler.params.w - this.stick.fi;
+            this.params.f = window.controler.execute(
+                window.controler.params.e,
+                window.controler.params.eLast,
+                window.controler.params.eLast2,
+                window.controler.params.uLast,
+                window.controler.params.r0,
+                window.controler.params.rI,
+                window.controler.params.rD,
                 this.params.deltaT
             );
-            window.regulator.params.eLast2 = window.regulator.params.eLast;
-            window.regulator.params.eLast = window.regulator.params.e;
-            window.regulator.params.uLast = this.params.f;
-        } else if (window.regulator.name === "manual") {
+            window.controler.params.eLast2 = window.controler.params.eLast;
+            window.controler.params.eLast = window.controler.params.e;
+            window.controler.params.uLast = this.params.f;
+        } else if (window.controler.name === "manual") {
             let slider_value = $('#pendulum_game_slider').val();
             this.params.force_scale = 500 / this.canvas_params.canvas.width * 0.05; // TODO better force scale!
             this.params.f = slider_value * this.params.force_scale;
@@ -186,10 +189,10 @@ class App {
 
         //call solver
         this.result = this.solvePendulumNonLinear(
-            this.segway.x,
-            this.segway.speedX,
-            this.segway.fi,
-            this.segway.speedFi,
+            this.stick.x,
+            this.stick.speedX,
+            this.stick.fi,
+            this.stick.speedFi,
             this.params.f,
             this.params.deltaT,
             this.game_params.mC,
@@ -200,24 +203,24 @@ class App {
             -this.game_params.g);
 
         //update state variables
-        this.segway.x = this.result.x1;
-        this.segway.speedX = this.result.x2;
-        this.segway.fi = this.result.x3;
-        this.segway.speedFi = this.result.x4;
+        this.stick.x = this.result.x1;
+        this.stick.speedX = this.result.x2;
+        this.stick.fi = this.result.x3;
+        this.stick.speedFi = this.result.x4;
 
-        // segway drawing saturation
-        if (this.segway.x <= 0) {
-            this.segway.x = 0;
+        // stick drawing saturation
+        if (this.stick.x <= 0) {
+            this.stick.x = 0;
             this.speedX = 0;
         } // TODO why 50?
-        if (this.segway.x * this.canvas_params.m2px >= this.canvas_params.canvas.width - 50){
-            this.segway.x = (this.canvas_params.canvas.width - 50) / this.canvas_params.m2px;
-            this.segway.speedX = 0;
+        if (this.stick.x * this.canvas_params.m2px >= this.canvas_params.canvas.width - 50){
+            this.stick.x = (this.canvas_params.canvas.width - 50) / this.canvas_params.m2px;
+            this.stick.speedX = 0;
         }
 
-        // segway motion update
-        this.segway.transform();
-        this.segway.draw();
+        // stick motion update
+        this.stick.transform();
+        this.stick.draw();
 
     }
 
@@ -245,5 +248,5 @@ class App {
 }
 
 window.game = new App();
-window.available_regulators = ["manual", "pid"];
+window.available_controlers = ["manual", "pid"];
 

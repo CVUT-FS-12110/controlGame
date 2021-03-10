@@ -1,4 +1,4 @@
-export class regulator_manual {
+export class controler_manual {
 
     constructor() {
         this.name = "manual"

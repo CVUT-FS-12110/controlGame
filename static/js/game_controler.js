@@ -1,42 +1,43 @@
-import {regulator_PID} from "/static/regulators/pid/app.js";
-import {regulator_manual} from "/static/regulators/manual/app.js";
+import {controler_PID} from "/static/controlers/pid/app.js";
+import {controler_manual} from "/static/controlers/manual/app.js";
 
-let REGULATORS = {
-    "manual": regulator_manual,
-    "pid": regulator_PID
+// TODO plotting
+
+let CONTROLERS = {
+    "manual": controler_manual,
+    "pid": controler_PID
 }
 
-
-function switch_regulator(name) {
-    window.regulator = new REGULATORS[name]();
+function switch_controler(name) {
+    window.controler = new CONTROLERS[name]();
     $("#game_controls").hide()
-    window.regulator.init();
+    window.controler.init();
     window.game.game_reset();
 }
 
-function show_regulator_menu(regulators) {
-    $("#regulator_menu").html("")
+function show_controler_menu(controlers) {
+    $("#controler_menu").html("")
     var i;
     let html_src, name;
-    for (i = 0; i < regulators.length; i++) {
-        name = regulators[i];
+    for (i = 0; i < controlers.length; i++) {
+        name = controlers[i];
         html_src = '<button name="' + name + '">' + name + '</button>';
-        $("#regulator_menu").append(html_src)
+        $("#controler_menu").append(html_src)
     };
-    $("#regulator_menu button").click(function() {
-        switch_regulator($( this ).attr('name'))
+    $("#controler_menu button").click(function() {
+        switch_controler($( this ).attr('name'))
     });
-    $("#regulator_menu").show()
+    $("#controler_menu").show()
 
 }
 
-show_regulator_menu(window.available_regulators)
-window.regulator;
-switch_regulator("manual");
+show_controler_menu(window.available_controlers)
+window.controler;
+switch_controler("manual");
 
-$("#reset_regulator").click(function() {
-    $("#regulator_settings").show();
-    $("#reset_regulator").hide();
+$("#reset_controler").click(function() {
+    $("#controler_settings").show();
+    $("#reset_controler").hide();
     $("#game_panel").hide();
 });
 

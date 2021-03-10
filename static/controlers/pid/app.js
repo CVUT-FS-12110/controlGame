@@ -1,4 +1,4 @@
-export class regulator_PID {
+export class controler_PID {
 
     constructor() {
         this.name = "pid"
@@ -17,7 +17,7 @@ export class regulator_PID {
     init() {
         this.reset()
 
-        $("#regulator_settings").html(
+        $("#controler_settings").html(
             "<div><label>P</label>" + "<input type='number' name='r0' value='" + this.params.r0 + "'></div>" +
             "<div><label>I</label>" + "<input type='number' name='rI' value='" + this.params.rI + "'></div>" +
             "<div><label>D</label>" + "<input type='number' name='rD' value='" + this.params.rD + "'></div>" +
@@ -25,16 +25,16 @@ export class regulator_PID {
         );
 
         var self = this;
-        $("#regulator_settings button").click(function() {
+        $("#controler_settings button").click(function() {
             // TODO: validace vstupu
-            self.params.r0 = parseFloat($("#regulator_settings input[name='r0']").val());
-            self.params.rI = parseFloat($("#regulator_settings input[name='rI']").val());
-            self.params.rD = parseFloat($("#regulator_settings input[name='rD']").val());
-            $("#regulator_settings").hide();
-            $("#reset_regulator").show();
+            self.params.r0 = parseFloat($("#controler_settings input[name='r0']").val());
+            self.params.rI = parseFloat($("#controler_settings input[name='rI']").val());
+            self.params.rD = parseFloat($("#controler_settings input[name='rD']").val());
+            $("#controler_settings").hide();
+            $("#reset_controler").show();
             $("#game_panel").show();
         });
-        $("#regulator_settings").show();
+        $("#controler_settings").show();
     }
 
     execute(e, eLast, eLast2, uLast, r0, rI, rD, deltaT) {
