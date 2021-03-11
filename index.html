@@ -1,31 +1,18 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>The Game</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
-<header>
-    <h1>PID game</h1>
-</header>
 
-<!--game canvas-->
-<canvas id="pidGame" width="500" height="400" ></canvas>
-<br>
-<h2>Force control:</h2>
-<canvas id="force" width="500" height="40" ></canvas>
+    <h1>The Game</h1>
 
-<!--game js call-->
-<script type="module" src="app.js" charset="UTF-8"></script>
-
-<!--my logging paragraph-->
-<p id="demo"></p>
-<p id="errors"></p>
-<button id="start">Start</button>
-<button id="pause">Pause</button>
-<button id="reset">Reset</button>
+    <a href="/inverse_pendulum.html">Inverse pendulum</a>
 
 </body>
 </html>
