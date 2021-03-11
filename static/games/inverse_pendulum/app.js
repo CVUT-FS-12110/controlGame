@@ -46,6 +46,7 @@ class Stick{
 class App {
 
     constructor() {
+        this.title = "Inverse pendulum";
         this.plots = [
             {
                 id: "f",

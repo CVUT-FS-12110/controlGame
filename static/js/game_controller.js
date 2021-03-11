@@ -107,8 +107,8 @@ show_model_panel();
 create_plots();
 $("#pause").hide();
 
-
-
+$("head").append('<title>' + window.game.title + '</title>');
+$("h1").html(window.game.title);
 
 
 window.plot = function(data, time_index) {
