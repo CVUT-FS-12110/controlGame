@@ -1,8 +1,6 @@
 import {controller_PID} from "/static/controllers/pid/app.js";
 import {controller_manual} from "/static/controllers/manual/app.js";
 
-// TODO plotting
-
 let CONTROLLERS = {
     "manual": controller_manual,
     "pid": controller_PID
@@ -22,7 +20,7 @@ function show_select_controller_panel() {
     $("#stepback_select_controller").hide();
     $("#stepback_model").show();
 
-    var controllers = window.available_controllers;
+    var controllers = window.game.available_controllers;
     $("#controller_menu").html("")
     var i;
     let html_src, name;
@@ -46,8 +44,10 @@ function show_controller_panel(name) {
     $("#stepback_select_controller").show();
     $("#stepback_model").show();
 
-    window.controller = new CONTROLLERS[name]();
-    window.controller.init();
+    if (name != false) {
+        window.controller = new CONTROLLERS[name]();
+        window.controller.init();
+    };
     window.game.game_reset();
 
     $("#controller_panel .trigger").click(function() {
@@ -101,7 +101,7 @@ function create_plots() {
     };
 }
 
-window.controller;
+window.controller = {reset: function() {}};
 show_model_panel();
 create_plots();
 $("#pause").hide();
@@ -119,16 +119,18 @@ window.plot = function(data, time_index) {
     };
 };
 
+function stepback_reset() {
+    window.game.game_reset();
+    window.controller.reset();
+    create_plots();
+    $("#pause").hide();
+    $("#start").show();
+}
+
 $("#start").click(function() {
     window.game.game_start();
     $("#pause").show();
     $("#start").hide();
-});
-
-$("#reset").click(function() {
-    window.game.game_reset();
-    window.controller.reset();
-    create_plots();
 });
 
 $("#pause").click(function() {
@@ -137,12 +139,21 @@ $("#pause").click(function() {
     $("#start").show();
 });
 
+$("#reset").click(function() {
+    stepback_reset();
+});
+
+$(".stepback_button").click(function() {
+    stepback_reset()
+});
+
+
 $("#stepback_select_controller").click(function() {
     show_select_controller_panel();
 });
 
 $("#stepback_controller").click(function() {
-    show_controller_panel(window.controller.name);
+    show_controller_panel(false);
 });
 
 $("#stepback_model").click(function() {
@@ -150,14 +161,17 @@ $("#stepback_model").click(function() {
     show_model_panel();
 });
 
-$(".stepback_button").click(function() {
+
+// model override
+function test_override(name) {
+    window.controller = new CONTROLLERS[name]();
+    window.controller.init();
+    // manually override params of controller or game here
+
     window.game.game_reset();
-    window.controller.reset();
-    create_plots();
-});
-
-
-
+    show_game_panel()
+}
+//test_override("pid");
 
 
 

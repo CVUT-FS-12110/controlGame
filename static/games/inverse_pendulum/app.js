@@ -1,7 +1,8 @@
 // TODO draw ground in canvas
 // TODO disallow to crash stick to ground
 // TODO nonlinear manual force
-// TODO max force !
+// TODO max force in model params!
+// TODO manage walls on sides in better way (no magic constants)
 
 class Stick{
 
@@ -45,13 +46,6 @@ class Stick{
 class App {
 
     constructor() {
-        this.game_params = { // TODO possible defaults from constructor
-            mC: 1.0, //Cart mass
-            mP: 0.5, // Pendulum mass
-            b:  0.9, // Cart friction
-            g: 9.81, // gravity
-            l: 1.0, // pendulum length
-        };
         this.plots = [
             {
                 id: "f",
@@ -64,6 +58,18 @@ class App {
                 unit: "rad"
             }
         ];
+        this.available_controllers = ["manual", "pid"];
+
+        // TODO Matous: static folder as parameter
+        let custom_style = '<link rel="stylesheet" href="/static/games/inverse_pendulum/styles.css">';
+        $("head").append(custom_style);
+        this.game_params = { // TODO Matous: possible defaults from constructor
+            mC: 1.0, //Cart mass
+            mP: 0.5, // Pendulum mass
+            b:  0.9, // Cart friction
+            g: 9.81, // gravity
+            l: 1.0, // pendulum length
+        };
         this.simulation = 0;
         this.params = {};
         this.canvas_params = {};
@@ -139,7 +145,8 @@ class App {
 
         var self = this;
         $("#pendulum_game_slider").mousedown(function(e) {
-            self.game_start();
+//            self.game_start();
+            $("#start").click();
         });
 
     }
@@ -285,7 +292,6 @@ class App {
 
 }
 
+
+
 window.game = new App();
-window.available_controllers = ["manual", "pid"];
-
-
