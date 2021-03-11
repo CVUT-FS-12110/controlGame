@@ -61,7 +61,7 @@ class App {
         this.available_controllers = ["manual", "pid"];
 
         // TODO Matous: static folder as parameter
-        let custom_style = '<link rel="stylesheet" href="/static/games/inverse_pendulum/styles.css">';
+        let custom_style = '<link rel="stylesheet" href="/controlGame/static/games/inverse_pendulum/styles.css">';
         $("head").append(custom_style);
         this.game_params = { // TODO Matous: possible defaults from constructor
             mC: 1.0, //Cart mass
@@ -174,7 +174,7 @@ class App {
 
 
         let stickImage = new Image();
-        stickImage.src = '/static/games/inverse_pendulum/segway.png';
+        stickImage.src = '/controlGame/static/games/inverse_pendulum/segway.png';
 
         this.stick = new Stick(
             this.canvas_params.canvas.width,
