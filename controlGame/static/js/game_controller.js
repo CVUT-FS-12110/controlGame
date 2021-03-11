@@ -1,5 +1,5 @@
-import {controller_PID} from "/static/controllers/pid/app.js";
-import {controller_manual} from "/static/controllers/manual/app.js";
+import {controller_PID} from "/controlGame/static/controllers/pid/app.js";
+import {controller_manual} from "/controlGame/static/controllers/manual/app.js";
 
 let CONTROLLERS = {
     "manual": controller_manual,
@@ -101,10 +101,15 @@ function create_plots() {
     };
 }
 
+
 window.controller = {reset: function() {}};
 show_model_panel();
 create_plots();
 $("#pause").hide();
+
+
+
+
 
 window.plot = function(data, time_index) {
     console.log(data);

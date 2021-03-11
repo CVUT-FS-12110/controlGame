@@ -18,3 +18,7 @@ canvas {
 .modebar{
       display: none !important;
 }
+
+h1 {
+    color: green;
+}
