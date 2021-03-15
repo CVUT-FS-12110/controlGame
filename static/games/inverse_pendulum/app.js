@@ -168,7 +168,7 @@ class App {
         this.params = {};
         this.params.f = 0;
         this.params.xDot0 = 0.0;
-        this.params.fi0 = 0.5;
+        this.params.fi0 = 0.1;
         this.params.fiDot0 = 0;
         this.params.deltaT = 0.025;
         this.time_index = 0;
@@ -222,8 +222,15 @@ class App {
             window.controller.params.uLast = this.params.f;
         } else if (window.controller.name === "manual") {
             let slider_value = $('#pendulum_game_slider').val();
-            this.params.force_scale = 500 / this.canvas_params.canvas.width * 0.05; // TODO better force scale!
-            this.params.f = slider_value * this.params.force_scale;
+            // this.params.force_scale = 500 / this.canvas_params.canvas.width * 0.05; // TODO better force scale!
+            this.params.force_scale = 0.01;
+            this.params.force_max = 30;
+            // this.params.f = (slider_value * this.params.force_scale);
+            this.params.f = this.params.force_max/(1+Math.exp(-slider_value * this.params.force_scale)) - this.params.force_max/2;
+            // this.params.f = (slider_value * this.params.force_scale)**(3);
+
+            // console.log("f = " + this.params.f + ", slider = " + slider_value);
+
         }
 
         //call solver
