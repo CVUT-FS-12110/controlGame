@@ -272,6 +272,11 @@ class App {
 
 
     solvePendulumNonLinear(x, xDot, fi, fiDot, u, deltaT, mC, mP, inertia, b, lt, g) {
+        if (xDot > 0){
+            u = u + 10;      
+        } else if (xDot < 0){
+            u = u - 10;
+        }
         //denominator for shorter eqn
         let denom = ((7*lt**2*mP**2)/3 - lt**2*mP**2*Math.cos(fi)**2 + (7*mC*lt**2*mP)/3);
 
